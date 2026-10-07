@@ -1,5 +1,6 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.spotless.LineEnding
+import dev.cirimo.trosko.buildlogic.library
 import dev.cirimo.trosko.buildlogic.libs
 import dev.cirimo.trosko.buildlogic.version
 import org.gradle.api.Plugin
@@ -17,6 +18,12 @@ class SpotlessConventionPlugin : Plugin<Project> {
             pluginManager.apply("com.diffplug.spotless")
 
             val ktlintVersion = libs.version("ktlint")
+            // Compose-specific rules (modifier parameters, state hoisting, naming), run by ktlint.
+            // The detekt flavour of the same rules needs detekt 2, which is not stable yet.
+            val composeRules =
+                libs.library("compose-rules-ktlint").get().let { rules ->
+                    "${rules.module.group}:${rules.module.name}:${rules.versionConstraint.requiredVersion}"
+                }
 
             // A file tree with excludes prunes whole directories. A plain "**/*.kt" target would walk
             // into .gradle and build, which is slow and trips over files Gradle holds locked.
@@ -32,7 +39,7 @@ class SpotlessConventionPlugin : Plugin<Project> {
 
                 kotlin {
                     target(sources("**/*.kt"))
-                    ktlint(ktlintVersion)
+                    ktlint(ktlintVersion).customRuleSets(listOf(composeRules))
                 }
                 kotlinGradle {
                     target(sources("**/*.gradle.kts"))

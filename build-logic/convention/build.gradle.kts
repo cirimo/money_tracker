@@ -10,6 +10,8 @@ dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.compose.gradlePlugin)
+    compileOnly(libs.ksp.gradlePlugin)
+    compileOnly(libs.room.gradlePlugin)
 
     implementation(libs.spotless.gradlePlugin)
     implementation(libs.detekt.gradlePlugin)
@@ -21,9 +23,25 @@ gradlePlugin {
             id = "trosko.android.application"
             implementationClass = "AndroidApplicationConventionPlugin"
         }
+        register("androidLibrary") {
+            id = "trosko.android.library"
+            implementationClass = "AndroidLibraryConventionPlugin"
+        }
         register("androidCompose") {
             id = "trosko.android.compose"
             implementationClass = "AndroidComposeConventionPlugin"
+        }
+        register("androidRoom") {
+            id = "trosko.android.room"
+            implementationClass = "AndroidRoomConventionPlugin"
+        }
+        register("jvmLibrary") {
+            id = "trosko.jvm.library"
+            implementationClass = "JvmLibraryConventionPlugin"
+        }
+        register("kotlinSerialization") {
+            id = "trosko.kotlin.serialization"
+            implementationClass = "KotlinSerializationConventionPlugin"
         }
         register("detekt") {
             id = "trosko.detekt"
