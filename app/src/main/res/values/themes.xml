@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Placeholder window theme taken straight from the platform. The real theme is
+        defined by the design session, see docs/DESIGN.md.
+    -->
+    <style name="Theme.Trosko" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

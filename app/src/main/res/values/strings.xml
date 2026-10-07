@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Troško</string>
+    <string name="placeholder_message">Troško is alive. The real app starts here.</string>
+</resources>
