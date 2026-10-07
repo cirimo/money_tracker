@@ -102,8 +102,11 @@ Details on the resource files themselves are in
   and does not reach out for data itself. This is what makes it previewable, testable and
   reusable. The state lives in the screen's view model; the four parts of a screen are
   described in [ARCHITECTURE.md](ARCHITECTURE.md#the-ui-layer).
-- Wrap what a screen draws in `TroskoTheme`, and build it from the design system's components
-  once they exist. A feature never uses a UI library directly.
+- Wrap what a screen draws, and every preview, in `TroskoTheme`, and build it from the design
+  system's components. A feature never uses a UI library directly, never calls `BasicText`
+  (its default colour is black, which vanishes in the dark theme; use `TroskoText`), and never
+  draws its own outline or shadow (use `StickerSurface`). If a component is missing, add it to
+  `:core:designsystem` following [DESIGN.md](DESIGN.md#components).
 - Keep composables free of business logic. They decide how something looks, not what is true.
   Anything involving money, dates or rules is computed elsewhere and passed in ready to show.
 - Do not read or write anything slow during composition, and do not create objects in
@@ -111,9 +114,13 @@ Details on the resource files themselves are in
   an animation, and this app animates a lot.
 - Give every screen and every non-trivial component a `@Preview`. Previews are private functions
   named after what they preview with a `Preview` suffix.
-- No hardcoded colours, text styles, shapes, spacing or durations once the design system exists.
-  They come from the theme defined in [DESIGN.md](DESIGN.md). Until then, the placeholder screen
-  is intentionally unstyled.
+- No hardcoded colours, text styles, shapes, spacing or animation specs. They come from
+  `TroskoTheme` and from `TroskoDimens` and `TroskoMotion`, described in
+  [DESIGN.md](DESIGN.md). A literal `Color(...)`, `.dp` for spacing, `spring(...)` or
+  `tween(...)` in a feature is a mistake, because the next change to the design will miss it.
+- Every animated composable checks `TroskoTheme.reducedMotion` and uses `TroskoMotion.reduced()`
+  when it is set. A value animated on every frame is read in a draw or layer lambda, as
+  `StickerSurface` does with `lift`, so it does not recompose.
 - Animation is a first-class part of this product, so treat it as real code: no arbitrary
   delays, no animation that blocks input, and every one honours the reduced-motion setting.
 

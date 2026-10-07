@@ -89,8 +89,9 @@ breaking one is expensive to undo.
 - Once a release build has been installed on a real phone, the database schema and the export
   format only change through tested migrations.
   See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#migrations).
-- Design belongs to [docs/DESIGN.md](docs/DESIGN.md), which is still a stub. Do not make its
-  decisions as a side effect of other work. Ask instead.
+- Follow [docs/DESIGN.md](docs/DESIGN.md): everything on screen is paper, ink or a sticker,
+  built from the design system's components. A new colour, typeface, shape or kind of motion is
+  a decision for the owner, who judges it by looking, so show it instead of describing it.
 
 ## Map of the documentation
 
@@ -114,7 +115,7 @@ catalog, Android resources, tests, and these documents. You do not need to read 
 app/                    the application: composition root, navigation, one package per feature
 core/domain/            plain Kotlin: Money, the model, rules, repository interfaces
 core/data/              the Room database, storage, export; schemas/ holds exported schemas
-core/designsystem/      theme and components, empty until the design session
+core/designsystem/      the theme, fonts and components every screen is built from
 build-logic/convention/ convention plugins; all shared build configuration lives here
 gradle/libs.versions.toml  every version and dependency coordinate
 config/                 detekt overrides and the Compose stability list

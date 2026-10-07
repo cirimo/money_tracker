@@ -51,8 +51,8 @@ settle arguments.
    like. The amount itself is always exact, always legible, and never rounded or hidden for
    effect.
 6. **Fun is for everyone.** Motion respects the system's reduced-motion setting, nothing depends
-   on colour alone, sound and haptics can be turned off, and everything works with a screen
-   reader. A playful effect that excludes someone is a bug.
+   on colour alone, and everything works with a screen reader. A playful effect that excludes
+   someone is a bug. (The app has no sound or haptics at all; see [DESIGN.md](DESIGN.md).)
 7. **Novelty must survive the hundredth use.** The user sees the main interactions several times
    a day. An effect that is charming once and tiring by Friday is worse than none. Prefer short,
    varied, physical-feeling responses over long set pieces.

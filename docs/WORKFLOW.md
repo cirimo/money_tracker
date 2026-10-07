@@ -113,8 +113,9 @@ Stop and ask before doing any of these:
 - Installing software on the machine or changing environment variables.
 - Deleting or overwriting anything you did not create in the current session.
 - Changing the application id, the minimum SDK, or anything else recorded as a decision.
-- Making a decision that belongs to [ARCHITECTURE.md](ARCHITECTURE.md) or
-  [DESIGN.md](DESIGN.md) while that document is still a stub.
+- Changing what [ARCHITECTURE.md](ARCHITECTURE.md) or [DESIGN.md](DESIGN.md) decides, or
+  deciding something they leave open. For design, show the owner the alternatives drawn; they
+  judge by looking.
 - Anything that would be visible outside this machine: publishing, uploading, creating
   releases or issues.
 

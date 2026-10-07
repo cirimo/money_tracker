@@ -26,10 +26,10 @@ and act on them literally, so an error here is repeated by every session until s
 - Decision records in `docs/decisions/` are not edited after they are accepted, apart from
   their status. A changed decision gets a new record; see `docs/decisions/README.md`. Add new
   records to the index there.
-- `docs/DESIGN.md` is a stub to be replaced whole by its dedicated session. Outside that
-  session, only add to its list of open decisions.
-- `docs/ARCHITECTURE.md` is written. Correct it when the code makes it untrue, but a change to
-  what it decides needs the owner's agreement and a new decision record.
+- `docs/ARCHITECTURE.md` and `docs/DESIGN.md` are written. Correct them when the code makes
+  them untrue, but a change to what they decide needs the owner's agreement and a new decision
+  record. Design values (colours, sizes, springs) live in code and are not copied into
+  `DESIGN.md`.
 - Use relative Markdown links between files, and check after renaming a heading or a file that
   the links to it still work.
 - Do not paste commands or version numbers you have not run or looked up. A wrong command in

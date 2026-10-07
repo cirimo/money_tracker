@@ -26,8 +26,8 @@ The principles behind these rules are in
 - Amounts, dates and numbers are never baked into strings. They are formatted for the locale
   in code and passed in as arguments.
 - Write Croatian as a native speaker would, not as a word-for-word translation, and follow the
-  tone of voice in [docs/DESIGN.md](../../docs/DESIGN.md) once it is defined. If you are unsure
-  of a Croatian phrasing, say so and let the owner check it.
+  tone of voice in [docs/DESIGN.md](../../docs/DESIGN.md#voice): "ti", short, never judging.
+  If you are unsure of a Croatian phrasing, say so and let the owner check it.
 
 ## Adding a language
 
@@ -37,9 +37,14 @@ those folders. `res/resources.properties` names the default locale and does not 
 
 ## Other resources
 
-- Colours, dimensions, styles, drawables and fonts are design decisions. While
-  [docs/DESIGN.md](../../docs/DESIGN.md) is a stub, do not add any. The current theme and
-  launcher icon are placeholders.
+- The design lives in Kotlin, in `core/designsystem`, not in XML resources. Do not add colour,
+  dimension or style resources for the UI. The exceptions are the window theme and its
+  `window_background` colour in `app`, which cover the moment before Compose draws and must
+  match the paper colour in `TroskoColors`, in both `values` and `values-night`.
+- Fonts are in `core/designsystem/src/main/res/font`. Adding or replacing one needs the owner's
+  agreement, its licence text in `core/designsystem/licenses`, and a check that it has the
+  Croatian letters.
+- The launcher icon is still a placeholder; see [docs/DESIGN.md](../../docs/DESIGN.md).
 - The minimum SDK is 26, so resource folders qualified `-v26` or lower are redundant and Lint
   rejects them. Adaptive icons go in `mipmap-anydpi`.
 - Prefer vector drawables. Do not add large bitmaps without discussing the size cost.

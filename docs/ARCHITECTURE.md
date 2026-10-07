@@ -29,7 +29,7 @@ record model, migrations). [STATUS.md](STATUS.md) says what has actually been bu
 | `:app` | Android application | `TroskoApplication`, `AppContainer`, `MainActivity`, navigation, every `feature/*` package, formatting of amounts and dates | all three `:core` modules |
 | `:core:domain` | plain Kotlin (JVM) | `Money`, the model, periods, rules, calculations, repository interfaces | nothing of ours |
 | `:core:data` | Android library | the Room database, settings storage, export and restore, repository implementations | `:core:domain` |
-| `:core:designsystem` | Android library with Compose | theme, tokens, components, motion, haptics and sound | nothing of ours |
+| `:core:designsystem` | Android library with Compose | theme, tokens, fonts, components, motion | nothing of ours |
 
 The boundaries that are most expensive to break are the ones the compiler enforces. `Money`
 cannot touch Compose or Room, because `:core:domain` has neither on its classpath. A screen
@@ -73,7 +73,8 @@ else. The plugins are `trosko.android.application`, `trosko.android.library`,
   transfer/          export and restore (internal)
 
 :core:designsystem   dev.cirimo.trosko.designsystem
-                     laid out by the design session
+  theme/             TroskoTheme and its tokens: colours, type, shapes, sizes, motion
+  component/         StickerSurface and everything built on it
 ```
 
 ## The UI layer
@@ -185,8 +186,9 @@ category                            record
 - **Timestamps** (`created_at`, `updated_at`, `archived_at`) are milliseconds since the epoch in
   UTC. `created_at` also orders records within one day.
 
-The columns that give a category its look (icon, colour) are not in the schema yet. They depend
-on the design session and are added before version 1 is frozen.
+A category's look is one of the six sticker colours and one icon
+([DESIGN.md](DESIGN.md#colour)). The two columns for them, each a text key mapped explicitly
+like `kind`, are not in the schema yet and are added before version 1 is frozen.
 
 ### Room for what comes later
 
@@ -261,8 +263,9 @@ Users' financial history has to survive every update for years, so:
 
 ## Settings
 
-Settings (sound and haptics switches and the like) are stored with DataStore Preferences in
-`:core:data`, behind an interface in `:core:domain`. They are kept out of the database on
+Settings are stored with DataStore Preferences in `:core:data`, behind an interface in
+`:core:domain`. The first release may turn out to have none: the theme follows the system and
+there is no sound or haptics to switch off. Add the storage when the first real setting appears. They are kept out of the database on
 purpose: they describe a device, not the user's finances, and do not belong in an export.
 
 The app language is not a setting of ours. Android's per-app language picker handles it.
@@ -346,18 +349,21 @@ The app animates a lot, so these hold from the first screen:
 
 Static checks for Compose come from the compose-rules ktlint rule set, run through Spotless.
 
-## What is left to the design session
+## Where architecture meets design
 
-Architecture assumes the following and the design session may overturn any of it:
+[DESIGN.md](DESIGN.md) defines the look and motion; these are the points where it constrains
+the code.
 
-- Compose's own drawing APIs are enough, charts included. No chart or animation library is in
-  the build. If the design calls for authored animations or a mascot, choosing Lottie, Rive or
-  neither is a decision for that session.
-- There is one `TroskoTheme`, with tokens provided through composition locals, in
-  `:core:designsystem`. It is an empty wrapper today.
-- Features use Troško's own components and never a UI library directly. If the design builds on
-  Material 3, that is an internal dependency of `:core:designsystem`.
-
-Architecture needs from that session: whether Material 3 is used, the token names, the
-component list, the motion specifications, the shape of navigation, how a category looks, and
-the haptic and sound patterns.
+- **No UI library.** The app is built on Compose's foundation layer, and every component lives
+  in `:core:designsystem` ([decision 0027](decisions/0027-no-material-library.md)). Features
+  use those components and nothing else.
+- **No chart, animation or icon library.** Charts, icons and the mascot are drawn with
+  Compose's own drawing APIs. The look is flat fills and solid shapes, so nothing needs blur or
+  shaders, which keeps the frame budget easy to hold.
+- **The theme is `TroskoTheme`**, with colours, type and shapes provided through composition
+  locals and sizes and motion as plain objects. It is the only place that may define a
+  composition local.
+- **Fonts are bundled**, because the app has no network access.
+- **The shape of navigation is still open.** Which screens exist and whether entry is a screen
+  or a sheet is decided with the first feature. The design fixes only the transition: a page
+  turn.

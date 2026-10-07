@@ -61,12 +61,13 @@ hosted on GitHub. See [decision 0006](decisions/0006-no-secrets-in-git.md).
 | Content rating questionnaire | not applicable yet | Play Console. |
 | Target audience and content declaration | not applicable yet | Play Console. |
 | Account and data deletion | not applicable yet | Required only if the app creates accounts. The first release has none. |
-| Third-party licence notices | not started | The app now ships kotlinx.coroutines, kotlinx.serialization and SQLite besides AndroidX, so notices are needed, as they will be for any fonts or icons. |
+| Third-party licence notices | not started | The app ships kotlinx.coroutines, kotlinx.serialization and SQLite besides AndroidX, and two fonts under the SIL Open Font License (texts in `core/designsystem/licenses`). It needs a screen or page that shows these notices. |
 | Accessibility | not started | Baseline in [CONVENTIONS.md](CONVENTIONS.md#accessibility-baseline). Test with TalkBack and large fonts before release. |
 
 ## Store listing
 
-All of these depend on the visual identity, so they wait for [DESIGN.md](DESIGN.md).
+The visual identity is defined in [DESIGN.md](DESIGN.md). The launcher icon, and so the store
+icon, waits for the mascot's final artwork; the screenshots wait for real screens.
 
 | Item | Status | Notes |
 |---|---|---|

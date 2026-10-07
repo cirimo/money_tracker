@@ -33,7 +33,7 @@ index below.
 | [0008](0008-application-id.md) | Application id `dev.cirimo.trosko` | accepted |
 | [0009](0009-min-sdk-26.md) | Minimum SDK 26 | accepted |
 | [0010](0010-quality-tooling.md) | Spotless with ktlint, detekt, strict Lint, one check command | accepted |
-| [0011](0011-provisional-placeholders.md) | Provisional placeholders awaiting the architecture and design sessions | accepted; backup superseded by 0020 |
+| [0011](0011-provisional-placeholders.md) | Provisional placeholders awaiting the architecture and design sessions | accepted; backup superseded by 0020, Material by 0027 |
 | [0012](0012-layers-and-state-flow.md) | Three layers and one-way state flow | accepted |
 | [0013](0013-module-layout.md) | Four modules, features as packages | accepted |
 | [0014](0014-manual-dependency-injection.md) | Manual dependency injection | accepted |
@@ -48,3 +48,7 @@ index below.
 | [0023](0023-no-network-and-no-crash-sdk.md) | No network access, no crash reporting SDK | accepted |
 | [0024](0024-testing-and-performance-guardrails.md) | Testing per layer, Compose rules and performance guardrails | accepted |
 | [0025](0025-csv-follows-the-app-language.md) | The CSV export follows the app language | accepted |
+| [0026](0026-design-language-notebook-and-stickers.md) | The design language: notebook, marker and stickers | accepted |
+| [0027](0027-no-material-library.md) | No Material library; components are our own | accepted |
+| [0028](0028-bundled-fonts.md) | Shantell Sans and Nunito, bundled | accepted |
+| [0029](0029-no-haptics-no-sound.md) | No haptics and no sound | accepted |
