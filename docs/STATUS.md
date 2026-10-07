@@ -36,8 +36,10 @@ repository, any write path, `Period` and the injected `Clock`, parsing and forma
 amounts, settings storage (DataStore is in the version catalog but unused), export and restore,
 seeding of the built-in categories, the application-wide scope for writes, and migrations.
 
-**Schema version 1 is not frozen.** No release build has been installed on any phone. It
-freezes the first time one is; write that here when it happens.
+**Schema version 1 is not frozen.** A release build was on the owner's phone for a few minutes
+as a test, signed with the debug key and uninstalled again, so no release installation with
+data exists. The schema freezes the first time a release build is installed to be used; write
+that here when it happens.
 
 ## Completed in the last session
 
@@ -58,16 +60,28 @@ What was verified by actually running it, on 2026-10-07:
 - On the owner's phone (Samsung SM-G998B, Android 15): the same six instrumented tests pass,
   and the debug build was installed and launched, with `MainActivity` resumed and the database
   files created.
+- The release build runs on the owner's phone. The unsigned release APK was signed with the
+  local debug key, installed, launched and then uninstalled. It showed the placeholder message,
+  which only appears after the database answers, so R8 does not break Room, the bundled SQLite
+  driver, Navigation 3 or serialization. No crash was logged.
+- Cloud backup and restore work on the owner's phone with the debug build: `bmgr backupnow`
+  ran an encrypted full backup of `trosko.db` and its `-wal`, `-shm` and `.lck` files, and after
+  uninstalling and reinstalling, Android restored them before first launch and the app opened
+  the restored database. A backup is refused ("Backup is not allowed") while the app is in the
+  stopped state, for example right after `am force-stop`.
+- Both native libraries in the release APK are aligned for 16 KB pages, in the zip
+  (`zipalign -c -P 16`) and in their ELF load segments. The bundled SQLite library is about
+  1.2 to 1.3 MB per ABI; the universal release APK is 5.8 MB, most of it four copies of SQLite.
+- CI passed on the push that contains the skeleton.
 
 What was not verified:
 
-- The release build has still never run on a device, because there is no keystore. R8 has
-  therefore never been exercised against Room, Navigation 3 or serialization at runtime.
-- Backup and restore have never been observed working. On the emulator, `bmgr backupnow` with
-  the local test transport reported that the transport rejected the package; the reason was
-  not established. It was not tried on the owner's phone, because a real backup uploads to the
-  owner's Google account and needs their say-so.
-- The size the bundled SQLite library adds to the APK, and its 16 KB page alignment.
+- Backup and restore of a database that has rows in it. The database was empty, because the
+  app cannot write yet. Repeat the round trip once it can, and compare the data.
+- Device-to-device transfer, which needs a second phone.
+- A release build signed with the real upload key, because there is no keystore yet.
+- Why the emulator's local test transport rejected the package. The real transport on the
+  phone works, so this was not pursued.
 
 ## Next
 
@@ -78,9 +92,9 @@ What was not verified:
 2. **The first feature**, recording an expense. It brings the rest of the domain model, the
    first write path and the first real screen, and with it the baseline profile. Confirm its
    scope with the owner first.
-3. Before any release build goes onto a phone: create the upload keystore
-   ([RELEASE.md](RELEASE.md)), finish the schema, and verify backup and restore on a real
-   device.
+3. Before any release build goes onto a phone to be used: create the upload keystore
+   ([RELEASE.md](RELEASE.md)), finish the schema, and repeat the backup and restore round trip
+   with real rows.
 
 ## Open questions for the owner
 
@@ -113,6 +127,8 @@ What was not verified:
   tested, and KSP does not document Kotlin 2.4.20 either. Everything passes, but suspect this
   first if something odd appears.
 - The bundled SQLite driver keeps a `trosko.db.lck` file beside the database, next to the usual
-  `-wal` and `-shm` files. Check how all four behave when backup and restore are verified.
+  `-wal` and `-shm` files. All four are backed up and restored together.
+- Android restores a backup only when the installed app's signature matches the one that made
+  it. A build signed with a different key starts empty.
 - Database tests do not run in CI, because CI has no emulator job.
 - The `feature/placeholder` package is deleted when the first real feature lands.
