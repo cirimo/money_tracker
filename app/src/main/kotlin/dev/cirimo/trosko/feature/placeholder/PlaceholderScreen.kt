@@ -1,4 +1,4 @@
-package dev.cirimo.trosko
+package dev.cirimo.trosko.feature.placeholder
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,13 +9,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import dev.cirimo.trosko.R
 
 /**
- * Proves the toolchain end to end and nothing more. It is unstyled on purpose:
- * the theme and the first real screen come from the design and architecture sessions.
+ * Proves the app end to end and nothing more: the message appears once storage has answered.
+ * It is unstyled on purpose; the theme and the first real screen come from the design session.
  */
 @Composable
-fun PlaceholderScreen(modifier: Modifier = Modifier) {
+fun PlaceholderScreen(
+    uiState: PlaceholderUiState,
+    modifier: Modifier = Modifier,
+) {
     Box(
         modifier =
             modifier
@@ -23,12 +27,15 @@ fun PlaceholderScreen(modifier: Modifier = Modifier) {
                 .safeDrawingPadding(),
         contentAlignment = Alignment.Center,
     ) {
-        BasicText(text = stringResource(R.string.placeholder_message))
+        when (uiState) {
+            PlaceholderUiState.Loading -> Unit
+            PlaceholderUiState.Ready -> BasicText(text = stringResource(R.string.placeholder_message))
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun PlaceholderScreenPreview() {
-    PlaceholderScreen()
+    PlaceholderScreen(uiState = PlaceholderUiState.Ready)
 }

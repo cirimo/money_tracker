@@ -2,12 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
-        Backup is off (allowBackup for Android 11 and older, dataExtractionRules for 12+)
-        until the architecture session decides how financial data is persisted and whether
-        it may leave the device. See docs/ARCHITECTURE.md.
+        Backup is on, but what it may carry is limited by the two rule files (dataExtractionRules
+        for Android 12 and newer, fullBackupContent for older). The three must agree.
+        See docs/ARCHITECTURE.md, backup.
     -->
     <application
-        android:allowBackup="false"
+        android:name=".TroskoApplication"
+        android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/full_backup_content"
         android:icon="@mipmap/ic_launcher"

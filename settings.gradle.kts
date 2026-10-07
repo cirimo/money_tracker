@@ -24,3 +24,6 @@ dependencyResolutionManagement {
 rootProject.name = "trosko"
 
 include(":app")
+include(":core:domain")
+include(":core:data")
+include(":core:designsystem")

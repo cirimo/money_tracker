@@ -3,6 +3,7 @@ import java.util.Properties
 plugins {
     id("trosko.android.application")
     id("trosko.android.compose")
+    id("trosko.kotlin.serialization")
 }
 
 // Release signing credentials live in an untracked file, see keystore.properties.example.
@@ -60,9 +61,18 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:data"))
+    implementation(project(":core:designsystem"))
+
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.runner)
