@@ -1,8 +1,9 @@
 # Product
 
-This is the first written version of the product definition. It was drafted in the bootstrap
-session from a short brief, and the owner has not yet reviewed it line by line. Treat the vision
-and the principle as settled and the feature lists as a starting point the owner can reorder.
+This is the first written version of the product definition, drafted in the bootstrap session
+from a short brief. Treat the vision and the principle as settled. The feature lists are a
+starting point: the owner intends to work them out further and add features over time, so
+confirm the scope of a feature with the owner before building it.
 
 ## Vision
 
@@ -74,7 +75,7 @@ logging slower loses. A dense, efficient screen with no character also loses, to
 - An overview of a period: total spent, total earned, the balance between them, and spending
   broken down by category.
 - A view of change over time: how spending and income compare from one month to the next.
-- A single currency chosen by the user.
+- A single currency, the euro. The first market is Croatia.
 - Everything stored on the device. No account, no sign-in, and the app works fully offline.
 - English and Croatian, following the system language, with the per-app language setting
   supported.

@@ -5,7 +5,7 @@
 
 ## Context
 
-The project needed a working name for the app label, the Gradle project and the package.
+The project needed a name for the app label, the Gradle project and the package.
 
 ## Decision
 
@@ -18,7 +18,7 @@ reads as a nickname, which suits an app meant to have a character.
   marked as not translatable.
 - Identifiers use the ASCII form `trosko`: the Gradle root project, the package, the theme
   name and the convention plugin ids.
-- It was asked for as a working name. The user-visible name can still change before release at
-  low cost. The application id cannot; see [0008](0008-application-id.md).
+- The owner confirmed the name as final in the same session. The application id is derived
+  from it and is permanent; see [0008](0008-application-id.md).
 - Trademark and Play Store name availability have not been checked. That is on the list in
   [RELEASE.md](../RELEASE.md).

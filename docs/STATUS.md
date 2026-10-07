@@ -56,18 +56,17 @@ What was not verified:
 
 ## Open questions for the owner
 
-- **Git author email.** The commits so far are authored as `ciri
-  <marko.cirimotic@renovatiods.com>`, which looks like a work address. Nothing has been pushed,
-  so this can still be changed without breaking the no-rewrite rule. Decide before the first
-  push whether that address should appear in the repository's history.
-- **Is the name final?** Troško was given as a working name. The visible name can change
-  cheaply; the application id cannot.
-- **Review [PRODUCT.md](PRODUCT.md).** The target user and both feature lists were drafted from
-  a short brief. In particular: is export a must-have for the first release, and is one
-  currency enough?
-- **Which currency and region first?** Presumably euro and Croatia, but it was never stated.
+- **The feature lists in [PRODUCT.md](PRODUCT.md)** are a first draft. The owner will refine
+  them and add features later, so confirm the scope of each feature before building it.
 - **Should the repository be public or private?** This affects how careful to be with what is
   written in documents and issues, though never with secrets, which stay out either way.
+
+## Answered by the owner in session 1
+
+- The name Troško is final.
+- The first release uses the euro and targets Croatia.
+- Commits to this repository are authored with `marko7.cirimotic@gmail.com`. It is set in the
+  repository's local git config; do not commit with any other address.
 
 ## Known issues and things to watch
 
