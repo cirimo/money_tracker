@@ -34,12 +34,11 @@ What was verified by actually running it, on 2026-10-07:
 - `connectedDebugAndroidTest` passes on the `Medium_Phone_API_36.1` emulator: 1 test, 0 failures.
 - The debug build was installed on the owner's phone (Samsung SM-G998B, Android 15) with
   `installDebug` and launched; `MainActivity` was confirmed as the resumed activity.
+- The first push to `origin/main` ran the CI workflow and it passed, including the download
+  of SDK platform 37.2 on the runner.
 
 What was not verified:
 
-- CI has never run, because nothing has been pushed yet. The workflow is untested. In
-  particular it relies on AGP downloading SDK platform 37.2 and build tools 37.0.0 on the
-  runner. Watch the first run after the first push and fix it if it fails.
 - The release build has never been run on a device, because there is no keystore yet.
 - The instrumented test was run on the emulator only, not on the physical phone.
 - The permission allowlist in `.claude/settings.json` was written from the documentation and
