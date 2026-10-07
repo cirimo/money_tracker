@@ -3,17 +3,18 @@
 The handoff between sessions. Read this first; rewrite it last. It describes the present, so
 replace what is stale instead of appending. History lives in git.
 
-Last updated: 2026-10-07, after session 4 (the first feature: recording an expense).
+Last updated: 2026-10-07, after session 5 (correcting and deleting a record).
 
 ## Current state
 
-The app has its first feature. It starts on a home page that lists the latest entries, and a
-button there turns the page to the entry screen, where an expense is recorded: an amount on the
-app's own keypad, a category, a date stepped a day at a time, an optional note. A saved record
-lands on the page as a sticker and is there after a restart.
+The app records expenses and lets a wrong one be put right. It starts on a home page that lists
+the latest entries; a button there turns the page to the entry screen, where an expense is
+recorded on the app's own keypad. Pressing a record on either list opens the correction screen:
+the same pad filled with what was written down, the record itself lying above it, a calendar
+behind the date, and a delete button that asks once.
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) and [DESIGN.md](DESIGN.md) are complete and were corrected
-  for what this session built. Decision records run from 0001 to 0032; 0030 to 0032 are new.
+  for what this session built. Decision records run from 0001 to 0033; 0033 is new.
 - Four modules: `:app`, `:core:domain`, `:core:data`, `:core:designsystem`.
 - Toolchain: Gradle 9.8.0, AGP 9.4.1, Kotlin 2.4.20, Compose BOM 2026.09.00
   ([decisions/0003](decisions/0003-toolchain-versions.md)), with KSP 2.3.12, Room 3.0.3,
@@ -24,111 +25,111 @@ lands on the page as a sticker and is there after a restart.
 
 What exists in code:
 
-- `:core:domain`: `Money`; `parseAmount` and `AmountInput` (the keypad's rules), neither of
-  which touches floating point; `Record`, `NewRecord` with its rules (amount above zero, no
-  future date, note length); `Category` with a colour and an icon; `BuiltinCategories`, nine
-  expense categories with fixed ids; the `CategoryRepository` and `RecordRepository`
-  interfaces.
+- `:core:domain`: `Money`; `parseAmount` and `AmountInput` (the keypad's rules, and
+  `AmountInput.of` to turn a stored amount back into keys), none of which touches floating
+  point; `Record`, `NewRecord` with its rules (amount above zero, no future date, note length);
+  `Category` with a colour and an icon; `BuiltinCategories`, nine expense categories with fixed
+  ids; `CalendarMonth`, a month laid out in weeks; the `CategoryRepository` and
+  `RecordRepository` interfaces, the latter with `add`, `replace`, `delete`, `observe` and
+  `observeLatest`.
 - `:core:data`: the Room database with the `category` and `record` tables (schema version 1,
   exported to `core/data/schemas/`), seeding of the built-in categories when the database is
-  created, `RoomCategoryRepository`, `RoomRecordRepository` (one write method, one query for the
-  latest records) and the public `Repositories` class.
+  created, `RoomCategoryRepository`, `RoomRecordRepository` and the public `Repositories` class.
 - `:core:designsystem`: the theme, and the components `StickerSurface`, `TroskoText`,
   `TroskoButton`, `QuietButton`, `QuietIconButton`, `CategoryChip`, `AmountDisplay`,
-  `TroskoTextField`, `RecordRow`, `InkIcon` with twelve glyphs, and `LandingSticker`.
+  `TroskoTextField`, `RecordRow` (which can be pressed), `DayCell`, `InkIcon` with thirteen
+  glyphs, and `LandingSticker`.
 - `:app`: `AppContainer` (repositories, the clock, the application-wide write scope),
-  `TroskoNavDisplay` with the page-turn transition, `feature/home`, `feature/expense`, and
-  `format/` (amounts, day names, category wording and look, and the record row both features
-  show).
+  `TroskoNavDisplay` with the page-turn transition and the result bus, `feature/home`,
+  `feature/expense` (the entry screen, the correction screen, and the pad, keypad, date stepper
+  and calendar they are built from), and `format/` (amounts, day names, category wording and
+  look, the record row and heading both lists show, and `RecordChange`, what the correction
+  screen tells a list).
 - Android backup is on, with the limits from [decisions/0020](decisions/0020-android-backup.md).
 
 What the documents describe but nobody has built yet:
 
-- From the product: recording an income, editing and deleting, history with filters, the
+- From the product: recording an income (and so correcting one), history with filters, the
   overview of a period and change over time, managing categories, export and restore.
-- From the architecture: `Period`, export and restore, migrations, settings storage, built-in
+- From the architecture: `Period` (only `CalendarMonth` exists in its package), export and restore, migrations, settings storage, built-in
   income sources, the baseline profile and macrobenchmark
   ([decisions/0032](decisions/0032-baseline-profile-in-its-own-session.md)).
 - From the design: bars and charts, the empty state with the mascot, the tilt of the page turn,
-  the error state of the text field, the pressed state of a record row, and all mascot artwork
+  the error state of the text field, and all mascot artwork
   including the launcher icon and splash screen. The delighted mascot beside a saved record
   waits for that artwork.
 
-**Schema version 1 is not frozen.** It changed in place this session (a colour and an icon on
-`category`, an index on `record.created_at`). No release build was installed. The schema
+**Schema version 1 is not frozen.** It did not change this session. No release build was installed. The schema
 freezes the first time a release build is installed to be used; write that here when it
 happens.
 
 ## Completed in the last session
 
-Session 4 built recording an expense. The owner answered the product questions and chose the
-layout from three drawn variants (published as a private page, not stored in the repository);
-the choices are in [decisions/0030](decisions/0030-home-page-and-own-keypad.md) and
-[0031](decisions/0031-built-in-categories.md). The placeholder feature was removed.
+Session 5 built correcting and deleting a record, with a calendar for the date. The owner chose
+from drawn variants (published as a private page, not stored in the repository) and agreed with
+every recommendation; the choices are in
+[decisions/0033](decisions/0033-correcting-and-deleting-a-record.md).
 
-What was verified by actually running it, on 2026-10-07, all on the owner's phone (Samsung
-SM-G998B, Android 15, Croatian):
+What was verified by actually running it, on 2026-10-07, on the owner's phone (Samsung SM-G998B,
+Android 15, Croatian, dark theme, text at 100 percent):
 
-- `check`, `assembleDebug` and `assembleRelease` (unsigned, with R8) pass. The release APK is
-  6.95 MB.
-- `connectedDebugAndroidTest`: `:app` 18 tests, `:core:data` 13, `:core:designsystem` 2, no
-  failures.
-- The debug build was installed and used through adb: amounts typed on the keypad, categories
-  chosen, the date stepped back, a note typed on Samsung's keyboard, eight expenses saved. They
-  were on the home page after a force-stop and relaunch.
-- Looking at it found three faults that the tests had not, all fixed: a landed record stayed
-  enlarged and off the page (now covered by `LandingStickerTest`), category names broke in the
-  middle of a word, and at 200 percent text the button's word and a record's name did too.
-- The light theme, by switching the phone to it and back: paper, ink and stickers are right on
-  both screens.
-- Text at 200 percent, by setting the font scale to 2.0 and back: the entry screen scrolls,
-  the chips fall into two columns, nothing is cut off or broken mid-word, and a record's amount
-  moves under its name.
-- A press, live: a key and the main button were captured while held down; each sits flat in its
-  shadow's place.
-- Reduced motion, with the three system animation scales at zero and then restored: the amount
-  and the landed record sit level, and saving still works. A press still moves the button, at
-  once, as the design says.
-- Backup with real rows: `bmgr backupnow` succeeded on Google's transport, the debug app was
-  uninstalled and installed again, and the home page showed the same eight records, compared
-  line by line.
-- Formatting on the device matches the JVM for the cases tested in both, apart from which space
-  and which minus sign the locale data uses.
+- `check`, `assembleDebug` and `assembleRelease` (unsigned, with R8) pass on the final tree. The
+  release APK is 6.98 MB.
+- `connectedDebugAndroidTest` on the final tree: `:app` 28 tests, `:core:data` 19,
+  `:core:designsystem` 4, no failures.
+- Before the calendar was added, the debug build was installed and used through adb. A record
+  was opened from the home page, its amount corrected twice (12,50 to 115,20 by a slip of the
+  script, then to 15,20), and saved. The page turned back, the heading said "Ispravljeno." and
+  the record sat tilted in its old place. After a force-stop and relaunch the home page showed
+  15,20.
+- Another record was opened, "Obriši" pressed, the question shown in place of the heading, and
+  the delete confirmed. The home page said "Obrisano." and listed seven records; the same seven
+  were read from the accessibility tree after a force-stop and relaunch.
+- Looking at it found one fault the tests had not: the correction screen reserved the entry
+  screen's tall page above the pad and so had to be scrolled to reach the bottom keys. The page
+  now takes only the height it needs, and the whole screen fits on this phone (360 by 800 dp).
+- After the tests uninstalled the app, a reinstall brought the earlier records back from
+  Android's backup, as noted under known issues.
 
 What was not verified:
 
-- **TalkBack by ear or by gesture.** TalkBack was switched on and focused the heading, but
-  swipes injected through adb did not move its focus, so the reading order and the spoken text
-  were not observed. What was checked instead: the accessibility tree read from the phone has
-  a label for every key, chip, arrow and row, and the screen tests assert that a chosen chip
-  is selected and that the button is disabled until it may be pressed. The owner should walk the entry screen once with TalkBack: the pad is meant
-  to be read before the page above it, and "Zapisano." is meant to be announced after a save.
-- Whether the landing and the page turn look right in motion. Only still frames were seen; the
-  owner has to watch them. The same goes for how often anything should vary.
-- The `reduced` fade. With the system's animator scale at zero Compose finishes animations at
-  once, so the fade is believed to be an immediate change; that was not measured.
-- The page turn following a predictive back gesture, and anything in landscape or on a tablet.
-- Typing the amount on a physical keyboard, and the dashed focus outline. Both are built; no
-  keyboard was attached. The digits only reach the keypad while something on the screen has
-  focus.
-- A failed save on a real database. The message and the kept form are tested with a fake that
-  refuses the write.
-- Process death in the middle of an entry on the device. The view model test restores a form
-  from saved state; the phone was not made to kill the process.
+- **The calendar on a device, by eye.** The phone dropped off adb just after the final build was
+  installed. The calendar is covered by the screen tests (a day is chosen and written, no day
+  after today is offered, the month does not turn past the current one) and those ran on the
+  phone, but nobody has looked at it: its spacing, the day cells at 360 dp wide, the underline
+  on today, or how it reads with enlarged text.
+- **The light theme, text at 200 percent and reduced motion for everything built this session.**
+  None of the three was switched on.
+- **A record opened from the entry screen's list.** Only the home page's list was pressed on the
+  device. Both lists use the same row and the same navigation call.
+- **The second landing and the rows moving up after a delete, in motion.** Only still frames
+  taken two seconds later were seen.
+- **TalkBack.** Not switched on this session. The screen tests assert that a pressable row is
+  one button, that the chosen day and chip say they are selected, and that days after today are
+  not offered; the spoken order and wording were not heard. The owner's pass from session 4 is
+  still owed too.
+- A failed correction or delete on a real database; both messages are tested with a fake that
+  refuses the write. A record that vanishes while its correction screen is open is tested the
+  same way.
+- Process death on the correction screen on the device. The view model test restores the
+  changed form from saved state.
+- The page turn following a predictive back gesture, landscape, tablets, a physical keyboard
+  and its focus outlines, as before.
 - The emulator. Nothing ran on it this session.
-- The release build on a device with this feature, device-to-device transfer, and a release
-  build signed with the real upload key, as before.
+- The release build on a device, device-to-device transfer, and a release build signed with the
+  real upload key, as before.
 
 ## Next
 
-1. **The owner's look at the result**: the motion of the landing and the page turn, a pass
-   with TalkBack, and the names "Vani" and "Stan".
+1. **The owner's look at the result**: from session 4, the motion of the landing and the page
+   turn, a pass with TalkBack, and the names "Vani" and "Stan"; from session 5, the correction
+   screen and its calendar in both themes and at 200 percent, the second landing, and the
+   English words "Correction" and "Keep". Everything listed above as not verified can be checked
+   in the same sitting.
 2. **The baseline profile and macrobenchmark**, in a short session of their own
    ([decisions/0032](decisions/0032-baseline-profile-in-its-own-session.md)). The module, the
    plugin and three libraries need the owner's approval.
-3. **Editing and deleting a record**, chosen by the owner as the next feature, because a wrong
-   entry cannot be corrected today. Agree its scope with the owner at the start of the session.
-4. **Recording an income**, then **the statistics on the home page**. Savings and the balance
+3. **Recording an income**, then **the statistics on the home page**. Savings and the balance
    mean nothing until income can be recorded, so income comes first. The proposal for the
    statistics, made in words and not yet seen drawn or approved:
    - this month so far: spent, earned, and the difference between them, as three figures;
@@ -141,9 +142,9 @@ What was not verified:
    An average per day would need division, which `Money` does not have on purpose
    ([ARCHITECTURE.md](ARCHITECTURE.md#money)); decide the rounding before proposing one.
    Draw the alternatives for the owner before building any of it.
-5. **The mascot's final artwork**, drawn from the approved sketches in `docs/design/mascot/`,
+4. **The mascot's final artwork**, drawn from the approved sketches in `docs/design/mascot/`,
    then the launcher icon and splash screen. Show the owner drawings; do not describe them.
-6. Before any release build goes onto a phone to be used: create the upload keystore
+5. Before any release build goes onto a phone to be used: create the upload keystore
    ([RELEASE.md](RELEASE.md)), finish the schema, and repeat the backup and restore round trip
    on that build.
 
@@ -193,7 +194,19 @@ What was not verified:
   still holds the schema from before this session.
 - `connectedDebugAndroidTest` uninstalls the app when it finishes, and the records in it are
   gone unless a backup brings them back. Run the tests before entering anything worth keeping.
-- A wrong entry cannot be edited or deleted yet. On the debug build that is harmless.
+- Correcting an amount means pressing backspace once for every key of the old one (five times
+  for 12,50); there is no key that clears it. Whether that is too slow is for the owner to say.
+- The entry screen has no calendar, only the arrows; the calendar is on the correction screen.
+  Giving entry the same one is a small change that was not asked for.
+- A pressable record row is announced by TalkBack with the system's default "double tap to
+  activate". A custom action word ("ispravi") was left out because its Croatian grammar inside
+  TalkBack's sentence could not be checked.
+- On a phone 360 dp wide, seven day cells of the minimum touch size need 8 dp more than the
+  content width, so the calendar reaches 4 dp into each gutter.
+- detekt allows a class ten functions. Both view models of the expense feature are at the limit;
+  the next thing either must do needs a function merged or a piece moved out.
+- In Git Bash, adb paths on the phone such as `/sdcard/x` are rewritten into Windows paths
+  unless `MSYS_NO_PATHCONV=1` is set.
 - The build prints a Gradle deprecation notice that comes from the detekt 1.23.8 plugin. It is
   harmless until Gradle 10. See [decisions/0003](decisions/0003-toolchain-versions.md).
 - The build prints "Unable to strip" for `libandroidx.graphics.path.so` and `libsqliteJni.so`.
