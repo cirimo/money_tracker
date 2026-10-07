@@ -4,6 +4,8 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,7 +44,19 @@ fun CategoryChip(
         ) {
             // The name is right beside it, so the icon is decoration to a screen reader.
             InkIcon(glyph = glyph, contentDescription = null, tint = TroskoTheme.colors.onSticker)
-            TroskoText(text = name, style = TroskoTheme.typography.label, color = TroskoTheme.colors.onSticker)
+            // A name stays whole on one line: it shrinks to fit a narrow chip instead of breaking
+            // in the middle of a word.
+            BasicText(
+                text = name,
+                style = TroskoTheme.typography.label.copy(color = TroskoTheme.colors.onSticker),
+                maxLines = 1,
+                softWrap = false,
+                autoSize =
+                    TextAutoSize.StepBased(
+                        minFontSize = TroskoTheme.typography.caption.fontSize,
+                        maxFontSize = TroskoTheme.typography.label.fontSize,
+                    ),
+            )
         }
     }
 }

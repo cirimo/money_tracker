@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -15,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.cirimo.trosko.designsystem.theme.TroskoMotion
 import dev.cirimo.trosko.designsystem.theme.TroskoTheme
+import kotlinx.coroutines.launch
 
 private const val DROP_SCALE = 1.22f
 private const val DROP_TILT_FACTOR = 3f
@@ -50,11 +52,17 @@ fun LandingSticker(
         label = "resting tilt",
     )
 
+    // The landing runs in the composable's own scope, not in the effect below: telling the owner
+    // it has started usually turns `landing` off again, which restarts the effect, and an
+    // animation living there would be cancelled at the top of its drop.
+    val scope = rememberCoroutineScope()
     LaunchedEffect(landing) {
         if (landing) {
             progress.snapTo(0f)
+            scope.launch {
+                progress.animateTo(1f, if (reducedMotion) TroskoMotion.reduced() else TroskoMotion.pop())
+            }
             currentOnLand()
-            progress.animateTo(1f, if (reducedMotion) TroskoMotion.reduced() else TroskoMotion.pop())
         }
     }
 

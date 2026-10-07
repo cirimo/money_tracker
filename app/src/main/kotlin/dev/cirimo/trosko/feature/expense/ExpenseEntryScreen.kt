@@ -314,8 +314,9 @@ private fun EntryPad(
         }
         FlowRow(
             modifier = Modifier.fillMaxWidth().selectableGroup(),
-            horizontalArrangement = Arrangement.spacedBy(TroskoDimens.SpaceS),
-            verticalArrangement = Arrangement.spacedBy(TroskoDimens.SpaceS),
+            // Wide enough that the second outline of the chosen chip clears its neighbours.
+            horizontalArrangement = Arrangement.spacedBy(TroskoDimens.SpaceM),
+            verticalArrangement = Arrangement.spacedBy(TroskoDimens.SpaceM),
             maxItemsInEachRow = chipColumns,
         ) {
             uiState.categories.forEach { category ->
