@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 126 126" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <title>Troško, neutral</title>
+  <g>
+    <path d="M48 104v13h-8M71 104v13h8M16 68q-9 5-7 15M105 58q12-5 10-18" stroke="#151515" stroke-width="5"/>
+    <path d="M60 14C88 12 108 34 106 62C104 90 84 108 58 106C30 104 12 84 14 58C16 32 34 16 60 14Z" transform="translate(6 6)" fill="#151515" stroke="#151515" stroke-width="5"/>
+    <path d="M60 14C88 12 108 34 106 62C104 90 84 108 58 106C30 104 12 84 14 58C16 32 34 16 60 14Z" fill="#FFD23F" stroke="#151515" stroke-width="5"/>
+    <path d="M62 25C80 25 94 40 95 58M26 66C28 82 40 93 56 95" stroke="#151515" stroke-width="2.5" opacity=".45"/>
+    <path d="M29 36l6-7M23 46l3-4" stroke="#151515" stroke-width="3"/>
+    <circle cx="35" cy="72" r="5" fill="#FF8FAB"/><circle cx="87" cy="70" r="5" fill="#FF8FAB"/>
+    <path d="M38 43q7-3 13 1M64 37q9-6 17 0" stroke="#151515" stroke-width="4"/><ellipse cx="46" cy="57" rx="6" ry="8" fill="#151515"/><ellipse cx="72" cy="55" rx="7.5" ry="9.5" fill="#151515"/><circle cx="48" cy="54" r="2" fill="#fff"/><circle cx="74.5" cy="51.5" r="2.6" fill="#fff"/><path d="M48 76q12 9 26-3M77 70q3 2 1 5" stroke="#151515" stroke-width="4"/>
+  </g>
+</svg>

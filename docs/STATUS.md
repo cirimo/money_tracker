@@ -96,8 +96,8 @@ What was not verified:
    first write path, the entry screen with its components (amount display, category chip, text
    field, record row), the landing-sticker animation and the baseline profile. Confirm its
    scope with the owner first, and decide then whether entry is a screen or a sheet.
-2. **The mascot's final artwork**, then the launcher icon and splash screen. Show the owner
-   drawings; do not describe them.
+2. **The mascot's final artwork**, drawn from the approved sketches in `docs/design/mascot/`,
+   then the launcher icon and splash screen. Show the owner drawings; do not describe them.
 3. Before any release build goes onto a phone to be used: create the upload keystore
    ([RELEASE.md](RELEASE.md)), finish the schema, and repeat the backup and restore round trip
    with real rows.
@@ -107,9 +107,6 @@ What was not verified:
 - **The feature lists in [PRODUCT.md](PRODUCT.md)** are a first draft. Confirm the scope of
   each feature before building it.
 - **Should the repository be public or private?**
-- **Is the second mascot sketch right?** The owner asked for more soul and authenticity than the
-  first one had. A second sketch was drawn and shown (a worn, lopsided coin with one raised
-  eyebrow and thin limbs) and had not been answered when the session ended.
 
 ## Answered by the owner
 
@@ -127,7 +124,8 @@ What was not verified:
   injection was left to the session, which chose manual injection.
 - Design: the notebook with a fat marker and stickers; a discreet mascot; "ti" and a short,
   relaxed voice in Croatian; light and dark themes following the system; no haptics and no
-  sound; the two fonts may be bundled.
+  sound; the two fonts may be bundled. The mascot sketches in `docs/design/mascot/` are
+  approved.
 
 ## Known issues and things to watch
 

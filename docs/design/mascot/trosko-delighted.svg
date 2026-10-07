@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 126 126" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <title>Troško, delighted</title>
+  <g>
+    <path d="M48 104v13h-8M71 104v13h8M18 50q-12-8-10-22M103 46q12-10 9-24" stroke="#151515" stroke-width="5"/>
+    <path d="M60 14C88 12 108 34 106 62C104 90 84 108 58 106C30 104 12 84 14 58C16 32 34 16 60 14Z" transform="translate(6 6)" fill="#151515" stroke="#151515" stroke-width="5"/>
+    <path d="M60 14C88 12 108 34 106 62C104 90 84 108 58 106C30 104 12 84 14 58C16 32 34 16 60 14Z" fill="#FFD23F" stroke="#151515" stroke-width="5"/>
+    <path d="M62 25C80 25 94 40 95 58M26 66C28 82 40 93 56 95" stroke="#151515" stroke-width="2.5" opacity=".45"/>
+    <path d="M29 36l6-7M23 46l3-4" stroke="#151515" stroke-width="3"/>
+    <circle cx="35" cy="72" r="5" fill="#FF8FAB"/><circle cx="87" cy="70" r="5" fill="#FF8FAB"/>
+    <path d="M39 58q7-10 13 0M65 56q8-11 15 0" stroke="#151515" stroke-width="4"/><path d="M45 70q15 20 32-2z" fill="#151515" stroke="#151515" stroke-width="4"/><path d="M54 80q7-5 13 0" stroke="#FF8FAB" stroke-width="4"/>
+  </g>
+</svg>

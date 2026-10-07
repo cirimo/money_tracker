@@ -140,10 +140,10 @@ looks cut from the same notebook. He is yellow, and yellow in the app is his col
 - **He never comments on how much the user spends.** He reacts to the act of writing something
   down, not to the amount.
 
-The owner approved the character in concept and asked for more soul than the first sketch had.
-The second sketch has been drawn but not yet confirmed, and no mascot artwork is in the app.
-Final vector artwork, the launcher icon (with its adaptive and monochrome variants) and the
-splash screen are open work.
+The owner approved the sketches in [design/mascot/](design/mascot/README.md); they fix the
+character. No mascot artwork is in the app yet. Final vector artwork drawn from those sketches,
+the launcher icon (with its adaptive and monochrome variants) and the splash screen are open
+work.
 
 ## Charts
 

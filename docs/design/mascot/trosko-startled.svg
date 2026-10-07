@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 126 126" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <title>Troško, startled</title>
+  <g>
+    <path d="M48 104v13h-8M71 104v13h8M20 44q-8-16 8-22M98 40q10-16-6-22" stroke="#151515" stroke-width="5"/>
+    <path d="M60 14C88 12 108 34 106 62C104 90 84 108 58 106C30 104 12 84 14 58C16 32 34 16 60 14Z" transform="translate(6 6)" fill="#151515" stroke="#151515" stroke-width="5"/>
+    <path d="M60 14C88 12 108 34 106 62C104 90 84 108 58 106C30 104 12 84 14 58C16 32 34 16 60 14Z" fill="#FFD23F" stroke="#151515" stroke-width="5"/>
+    <path d="M62 25C80 25 94 40 95 58M26 66C28 82 40 93 56 95" stroke="#151515" stroke-width="2.5" opacity=".45"/>
+    <path d="M29 36l6-7M23 46l3-4" stroke="#151515" stroke-width="3"/>
+    <circle cx="35" cy="72" r="5" fill="#FF8FAB"/><circle cx="87" cy="70" r="5" fill="#FF8FAB"/>
+    <circle cx="46" cy="57" r="9" fill="#fff" stroke="#151515" stroke-width="4"/><circle cx="73" cy="55" r="10.5" fill="#fff" stroke="#151515" stroke-width="4"/><circle cx="47" cy="58" r="3" fill="#151515"/><circle cx="74" cy="56" r="3.4" fill="#151515"/><ellipse cx="60" cy="82" rx="6" ry="4.5" fill="#151515"/><path d="M95 30q5 8 0 11q-5-3 0-11z" fill="#7BDFF2" stroke="#151515" stroke-width="3"/>
+  </g>
+</svg>
