@@ -19,6 +19,19 @@
     <string name="expense_entry_day_back_description">One day earlier</string>
     <string name="expense_entry_day_forward_description">One day later</string>
 
+    <!-- Correcting and deleting an expense -->
+    <string name="expense_edit_heading">Correction</string>
+    <string name="expense_edit_delete_button">Delete</string>
+    <string name="expense_edit_delete_question">Delete this entry?</string>
+    <string name="expense_edit_delete_keep_button">Keep</string>
+    <string name="expense_edit_delete_failed_message">That didn\'t delete. The entry is still here, try again.</string>
+    <string name="expense_edit_gone_message">This entry is no longer here.</string>
+    <string name="expense_edit_back_button">Back</string>
+
+    <!-- What a list says about the record that was just changed -->
+    <string name="record_notice_corrected">Corrected.</string>
+    <string name="record_notice_deleted">Deleted.</string>
+
     <!-- A record in a list. The pattern joins the day and the note; it has no words. -->
     <string name="record_row_day_and_note" translatable="false">%1$s · %2$s</string>
 

@@ -7,7 +7,11 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation3.runtime.result.LocalResultEventBus
+import androidx.navigation3.runtime.result.ResultEffect
 import dev.cirimo.trosko.appContainer
+import dev.cirimo.trosko.domain.model.RecordId
+import dev.cirimo.trosko.format.RecordChange
 
 /**
  * The stateful entry of recording an expense: it owns the view model and hands plain state and
@@ -15,6 +19,7 @@ import dev.cirimo.trosko.appContainer
  */
 @Composable
 fun ExpenseEntryRoute(
+    onRecordClick: (RecordId) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExpenseEntryViewModel = expenseEntryViewModel(),
 ) {
@@ -26,6 +31,11 @@ fun ExpenseEntryRoute(
         onPauseOrDispose {}
     }
 
+    // What the correction screen did to a record that was opened from here.
+    ResultEffect<RecordChange>(RecordChange.RESULT_KEY, LocalResultEventBus.current) { change ->
+        viewModel.onRecordChanged(change)
+    }
+
     ExpenseEntryScreen(
         uiState = uiState,
         onKey = viewModel::onKey,
@@ -35,6 +45,7 @@ fun ExpenseEntryRoute(
         onNoteChange = viewModel::onNoteChanged,
         onSave = viewModel::onSave,
         onLand = viewModel::onLandingShown,
+        onRecordClick = onRecordClick,
         modifier = modifier,
     )
 }

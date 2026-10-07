@@ -14,6 +14,7 @@ import dev.cirimo.trosko.domain.money.Money
 import dev.cirimo.trosko.format.DayLabel
 import dev.cirimo.trosko.format.MoneyFormatter
 import dev.cirimo.trosko.format.RecordLine
+import dev.cirimo.trosko.format.RecordNotice
 import dev.cirimo.trosko.testing.builtinCategories
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -33,9 +34,12 @@ class HomeScreenTest {
     private fun show(
         uiState: HomeUiState,
         onNewExpense: () -> Unit = {},
+        onRecordClick: (RecordId) -> Unit = {},
     ) {
         composeRule.setContent {
-            TroskoTheme { HomeScreen(uiState = uiState, onNewExpense = onNewExpense) }
+            TroskoTheme {
+                HomeScreen(uiState = uiState, onNewExpense = onNewExpense, onRecordClick = onRecordClick, onLand = {})
+            }
         }
     }
 
@@ -65,6 +69,25 @@ class HomeScreenTest {
         composeRule.onNodeWithText(context.getString(R.string.category_groceries)).assertIsDisplayed()
         composeRule.onNodeWithText(dayAndNote).assertIsDisplayed()
         composeRule.onNodeWithText(amount).assertIsDisplayed()
+    }
+
+    @Test
+    fun pressingARecordAsksToOpenIt() {
+        val line =
+            RecordLine(RecordId(UUID.randomUUID()), builtinCategories[0], Money(-100, euro), DayLabel.Today, null)
+        val opened = mutableListOf<RecordId>()
+        show(HomeUiState.Loaded(latest = listOf(line)), onRecordClick = { opened += it })
+
+        composeRule.onNodeWithText(context.getString(R.string.category_groceries)).performClick()
+
+        assertEquals(listOf(line.id), opened)
+    }
+
+    @Test
+    fun pageSaysWhenARecordWasCorrectedOrDeleted() {
+        show(HomeUiState.Loaded(latest = emptyList(), notice = RecordNotice.Deleted))
+
+        composeRule.onNodeWithText(context.getString(R.string.record_notice_deleted)).assertIsDisplayed()
     }
 
     @Test

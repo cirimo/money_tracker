@@ -35,6 +35,9 @@ internal data class ExpenseForm(
     }
 
     companion object {
+        /** Whether a form was ever written to [savedState]. */
+        fun isSavedIn(savedState: SavedStateHandle): Boolean = savedState.contains(KEY_NOTE)
+
         /** The form as it was last saved, or an empty one in [currency]. */
         fun restoredFrom(
             savedState: SavedStateHandle,

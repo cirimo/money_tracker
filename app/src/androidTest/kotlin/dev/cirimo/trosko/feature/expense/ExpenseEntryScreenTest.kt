@@ -59,6 +59,7 @@ class ExpenseEntryScreenTest {
                     onNoteChange = viewModel::onNoteChanged,
                     onSave = viewModel::onSave,
                     onLand = viewModel::onLandingShown,
+                    onRecordClick = {},
                 )
             }
         }

@@ -16,7 +16,9 @@ import dev.cirimo.trosko.domain.repository.CategoryRepository
 import dev.cirimo.trosko.domain.repository.RecordRepository
 import dev.cirimo.trosko.domain.repository.SaveResult
 import dev.cirimo.trosko.format.DayLabel
+import dev.cirimo.trosko.format.RecordChange
 import dev.cirimo.trosko.format.RecordLine
+import dev.cirimo.trosko.format.RecordNotice
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -67,7 +69,7 @@ class ExpenseEntryViewModel(
         )
 
     fun onKey(key: AmountKey) {
-        outcome.update { it.copy(showsSavedNote = false) }
+        outcome.update { it.copy(notice = null) }
         updateForm { it.copy(amount = it.amount.press(key)) }
     }
 
@@ -75,12 +77,12 @@ class ExpenseEntryViewModel(
     fun onCategoryChosen(id: CategoryId) = updateForm { it.copy(categoryId = if (it.categoryId == id) null else id) }
 
     fun onDayBack() {
-        refreshToday()
+        onResumed()
         updateForm { it.copy(pickedDate = (it.pickedDate ?: today.value).minusDays(1)) }
     }
 
     fun onDayForward() {
-        refreshToday()
+        onResumed()
         // Reaching today lets go of the date, so the form means "today" again, whenever saved.
         updateForm { it.copy(pickedDate = it.pickedDate?.plusDays(1)?.takeIf { next -> next < today.value }) }
     }
@@ -88,7 +90,7 @@ class ExpenseEntryViewModel(
     fun onNoteChanged(note: String) = updateForm { it.copy(note = note.take(NewRecord.NOTE_MAX_LENGTH)) }
 
     fun onSave() {
-        refreshToday()
+        onResumed()
         val current = form.value
         val now = today.value
         val categoryId = current.categoryId
@@ -102,7 +104,8 @@ class ExpenseEntryViewModel(
             when (val result = records.add(checked.record)) {
                 is SaveResult.Saved -> {
                     updateForm { ExpenseForm(AmountInput(currency)) }
-                    outcome.value = SaveOutcome(showsSavedNote = true, landedId = result.id, isLandingPending = true)
+                    outcome.value =
+                        SaveOutcome(notice = RecordNotice.Saved, landedId = result.id, isLandingPending = true)
                 }
 
                 SaveResult.NotSaved -> {
@@ -112,13 +115,28 @@ class ExpenseEntryViewModel(
         }
     }
 
-    /** The screen has started the landing animation of the record just saved. */
+    /** A record opened from this page was corrected or deleted; a corrected one lands again. */
+    fun onRecordChanged(change: RecordChange) {
+        outcome.value =
+            when (change) {
+                is RecordChange.Corrected -> {
+                    SaveOutcome(notice = RecordNotice.Corrected, landedId = change.id, isLandingPending = true)
+                }
+
+                is RecordChange.Deleted -> {
+                    SaveOutcome(notice = RecordNotice.Deleted)
+                }
+            }
+    }
+
+    /** The screen has started the landing animation of the record just saved or corrected. */
     fun onLandingShown() = outcome.update { it.copy(isLandingPending = false) }
 
-    /** The screen is in front again; the day may have changed while it was away. */
-    fun onResumed() = refreshToday()
-
-    private fun refreshToday() {
+    /**
+     * The screen is in front again; the day may have changed while it was away. Everything here
+     * that depends on today calls this first, for the same reason.
+     */
+    fun onResumed() {
         val now = LocalDate.now(clock)
         today.value = now
         // A picked date that today has caught up with, or passed, is simply today.
@@ -131,7 +149,7 @@ class ExpenseEntryViewModel(
 private data class SaveOutcome(
     val isSaving: Boolean = false,
     val saveFailed: Boolean = false,
-    val showsSavedNote: Boolean = false,
+    val notice: RecordNotice? = null,
     val landedId: RecordId? = null,
     val isLandingPending: Boolean = false,
 )
@@ -154,7 +172,7 @@ private fun expenseEntryUiState(
         note = form.note,
         canSave = form.amount.toMoney().isPositive && selected != null && !outcome.isSaving,
         saveFailed = outcome.saveFailed,
-        showsSavedNote = outcome.showsSavedNote,
+        notice = outcome.notice,
         latest = latest.map { RecordLine.of(it, today) },
         landedId = outcome.landedId,
         isLandingPending = outcome.isLandingPending,

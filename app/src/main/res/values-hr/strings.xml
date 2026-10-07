@@ -17,6 +17,19 @@
     <string name="expense_entry_day_back_description">Dan ranije</string>
     <string name="expense_entry_day_forward_description">Dan kasnije</string>
 
+    <!-- Correcting and deleting an expense -->
+    <string name="expense_edit_heading">Ispravak</string>
+    <string name="expense_edit_delete_button">Obriši</string>
+    <string name="expense_edit_delete_question">Obrisati ovaj zapis?</string>
+    <string name="expense_edit_delete_keep_button">Ostavi</string>
+    <string name="expense_edit_delete_failed_message">Nije se obrisalo. Zapis je još tu, probaj opet.</string>
+    <string name="expense_edit_gone_message">Ovog zapisa više nema.</string>
+    <string name="expense_edit_back_button">Natrag</string>
+
+    <!-- What a list says about the record that was just changed -->
+    <string name="record_notice_corrected">Ispravljeno.</string>
+    <string name="record_notice_deleted">Obrisano.</string>
+
     <!-- Days -->
     <string name="day_today">Danas</string>
     <string name="day_yesterday">Jučer</string>

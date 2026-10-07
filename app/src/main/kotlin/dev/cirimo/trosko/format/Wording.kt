@@ -49,6 +49,17 @@ fun dayLabelText(day: DayLabel): String =
 
 @Composable
 @ReadOnlyComposable
+fun recordNoticeText(notice: RecordNotice): String =
+    stringResource(
+        when (notice) {
+            RecordNotice.Saved -> R.string.expense_entry_saved_message
+            RecordNotice.Corrected -> R.string.record_notice_corrected
+            RecordNotice.Deleted -> R.string.record_notice_deleted
+        },
+    )
+
+@Composable
+@ReadOnlyComposable
 fun categoryNameText(name: CategoryName): String =
     when (name) {
         is CategoryName.Custom -> name.text

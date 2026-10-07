@@ -6,7 +6,11 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation3.runtime.result.LocalResultEventBus
+import androidx.navigation3.runtime.result.ResultEffect
 import dev.cirimo.trosko.appContainer
+import dev.cirimo.trosko.domain.model.RecordId
+import dev.cirimo.trosko.format.RecordChange
 
 /**
  * The stateful entry of the home page: it owns the view model and hands plain state to
@@ -15,6 +19,7 @@ import dev.cirimo.trosko.appContainer
 @Composable
 fun HomeRoute(
     onNewExpense: () -> Unit,
+    onRecordClick: (RecordId) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = homeViewModel(),
 ) {
@@ -25,7 +30,24 @@ fun HomeRoute(
         onPauseOrDispose {}
     }
 
-    HomeScreen(uiState = uiState, onNewExpense = onNewExpense, modifier = modifier)
+    // What the correction screen did to a record that was opened from here.
+    ResultEffect<RecordChange>(RecordChange.RESULT_KEY, LocalResultEventBus.current) { change ->
+        viewModel.onRecordChanged(change)
+    }
+
+    HomeScreen(
+        uiState = uiState,
+        onNewExpense = {
+            viewModel.onLeaving()
+            onNewExpense()
+        },
+        onRecordClick = { id ->
+            viewModel.onLeaving()
+            onRecordClick(id)
+        },
+        onLand = viewModel::onLandingShown,
+        modifier = modifier,
+    )
 }
 
 @Composable

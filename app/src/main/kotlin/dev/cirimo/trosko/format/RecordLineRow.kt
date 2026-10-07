@@ -9,11 +9,14 @@ import dev.cirimo.trosko.designsystem.component.RecordRow
 /**
  * A [RecordLine] put into words and drawn as a row. It lives here, not in a feature, because
  * more than one feature lists records and features may not use each other.
+ *
+ * @param onClick what pressing the row does; null for a row that only shows.
  */
 @Composable
 fun RecordLineRow(
     line: RecordLine,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) {
     val day = dayLabelText(line.day)
     val note = line.note
@@ -25,5 +28,6 @@ fun RecordLineRow(
         glyph = categoryGlyph(line.category.icon),
         fill = categoryFill(line.category.colour),
         modifier = modifier,
+        onClick = onClick,
     )
 }

@@ -12,9 +12,14 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.runtime.result.rememberResultEventBus
+import androidx.navigation3.runtime.result.rememberResultEventBusNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.cirimo.trosko.designsystem.theme.TroskoMotion
 import dev.cirimo.trosko.designsystem.theme.TroskoTheme
+import dev.cirimo.trosko.domain.model.RecordId
+import dev.cirimo.trosko.feature.expense.ExpenseEditKey
+import dev.cirimo.trosko.feature.expense.ExpenseEditRoute
 import dev.cirimo.trosko.feature.expense.ExpenseEntryKey
 import dev.cirimo.trosko.feature.expense.ExpenseEntryRoute
 import dev.cirimo.trosko.feature.home.HomeKey
@@ -30,6 +35,11 @@ import dev.cirimo.trosko.feature.home.HomeRoute
 @Composable
 fun TroskoNavDisplay(modifier: Modifier = Modifier) {
     val backStack = rememberNavBackStack(HomeKey)
+    val resultBus = rememberResultEventBus()
+    // A second press on a row, before the page has turned, must not open the record twice.
+    val openRecord: (RecordId) -> Unit = { id ->
+        if (backStack.lastOrNull() !is ExpenseEditKey) backStack.add(ExpenseEditKey(id.value.toString()))
+    }
     val reducedMotion = TroskoTheme.reducedMotion
     val turnForward = if (reducedMotion) crossFade() else pageIn()
     val turnBack = if (reducedMotion) crossFade() else pageOut()
@@ -39,19 +49,28 @@ fun TroskoNavDisplay(modifier: Modifier = Modifier) {
         modifier = modifier,
         onBack = { backStack.removeLastOrNull() },
         // The second decorator gives every entry its own view model store, cleared when the
-        // entry leaves the back stack.
+        // entry leaves the back stack. The third lets one screen hand a result to another.
         entryDecorators =
             listOf(
                 rememberSaveableStateHolderNavEntryDecorator(),
                 rememberViewModelStoreNavEntryDecorator(),
+                rememberResultEventBusNavEntryDecorator(resultBus),
             ),
         transitionSpec = { turnForward },
         popTransitionSpec = { turnBack },
         predictivePopTransitionSpec = { turnBack },
         entryProvider =
             entryProvider {
-                entry<HomeKey> { HomeRoute(onNewExpense = { backStack.add(ExpenseEntryKey) }) }
-                entry<ExpenseEntryKey> { ExpenseEntryRoute() }
+                entry<HomeKey> {
+                    HomeRoute(onNewExpense = { backStack.add(ExpenseEntryKey) }, onRecordClick = openRecord)
+                }
+                entry<ExpenseEntryKey> { ExpenseEntryRoute(onRecordClick = openRecord) }
+                entry<ExpenseEditKey> { key ->
+                    ExpenseEditRoute(
+                        recordId = key.recordId,
+                        onDone = { if (backStack.lastOrNull() == key) backStack.removeLastOrNull() },
+                    )
+                }
             },
     )
 }

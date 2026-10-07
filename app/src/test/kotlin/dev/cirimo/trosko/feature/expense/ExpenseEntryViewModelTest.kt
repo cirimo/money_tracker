@@ -5,6 +5,8 @@ import dev.cirimo.trosko.domain.model.NewRecord
 import dev.cirimo.trosko.domain.money.AmountKey
 import dev.cirimo.trosko.domain.money.Money
 import dev.cirimo.trosko.format.DayLabel
+import dev.cirimo.trosko.format.RecordChange
+import dev.cirimo.trosko.format.RecordNotice
 import dev.cirimo.trosko.testing.FakeCategoryRepository
 import dev.cirimo.trosko.testing.FakeRecordRepository
 import dev.cirimo.trosko.testing.SettableClock
@@ -163,7 +165,7 @@ class ExpenseEntryViewModelTest {
             assertNull(state.selectedCategoryId)
             assertEquals("", state.note)
             assertFalse(state.canSave)
-            assertTrue(state.showsSavedNote)
+            assertEquals(RecordNotice.Saved, state.notice)
             assertTrue(state.isLandingPending)
             assertEquals(state.latest.first().id, state.landedId)
             assertEquals(Money(-1_250, euro), state.latest.first().signedAmount)
@@ -198,7 +200,46 @@ class ExpenseEntryViewModelTest {
 
             viewModel.onKey(AmountKey.Digit(4))
 
-            assertFalse(viewModel.state.showsSavedNote)
+            assertNull(viewModel.state.notice)
+        }
+
+    @Test
+    fun `a record corrected elsewhere lands again and the page says so`() =
+        runTest {
+            val viewModel = viewModel()
+            viewModel.type("3")
+            viewModel.onCategoryChosen(groceries.id)
+            viewModel.onSave()
+            viewModel.onLandingShown()
+            val id =
+                viewModel.state.latest
+                    .first()
+                    .id
+
+            viewModel.onRecordChanged(RecordChange.Corrected(id))
+
+            assertEquals(RecordNotice.Corrected, viewModel.state.notice)
+            assertEquals(id, viewModel.state.landedId)
+            assertTrue(viewModel.state.isLandingPending)
+        }
+
+    @Test
+    fun `a record deleted elsewhere is said to be deleted and nothing lands`() =
+        runTest {
+            val viewModel = viewModel()
+            viewModel.type("3")
+            viewModel.onCategoryChosen(groceries.id)
+            viewModel.onSave()
+            val id =
+                viewModel.state.latest
+                    .first()
+                    .id
+
+            viewModel.onRecordChanged(RecordChange.Deleted(id))
+
+            assertEquals(RecordNotice.Deleted, viewModel.state.notice)
+            assertNull(viewModel.state.landedId)
+            assertFalse(viewModel.state.isLandingPending)
         }
 
     @Test
@@ -234,7 +275,7 @@ class ExpenseEntryViewModelTest {
             viewModel.onSave()
 
             assertFalse(viewModel.state.saveFailed)
-            assertTrue(viewModel.state.showsSavedNote)
+            assertEquals(RecordNotice.Saved, viewModel.state.notice)
         }
 
     @Test
