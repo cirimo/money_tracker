@@ -1,9 +1,9 @@
 # Product
 
-This is the first written version of the product definition, drafted in the bootstrap session
-from a short brief. Treat the vision and the principle as settled. The feature lists are a
-starting point: the owner intends to work them out further and add features over time, so
-confirm the scope of a feature with the owner before building it.
+The product definition. The vision and the principle are settled. On 2026-10-07 the owner
+confirmed the feature lists below as final for the first version of the app. What is in a list
+is decided; how far one feature goes in one session is still agreed with the owner before
+building it.
 
 ## Vision
 
@@ -90,7 +90,8 @@ logging slower loses. A dense, efficient screen with no character also loses, to
 - Several currencies with conversion.
 - Reminders and a home-screen widget for faster entry.
 - Backup and sync across devices.
-- Import from bank statements or other apps.
+- Import from bank statements or other apps. The owner has monthly statements from a bank and
+  from Revolut in mind, as CSV or spreadsheet files.
 - Achievements, streaks and other long-term play, if they can be done without breaking
   principle 4.
 - Shared ledgers for households.
@@ -105,3 +106,6 @@ logging slower loses. A dense, efficient screen with no character also loses, to
 
 These are tracked in [STATUS.md](STATUS.md) until the owner answers them. Answers get recorded
 here and, where they are decisions, in [decisions/](decisions/README.md).
+
+Answered so far: the home page shows statistics. Which figures and charts is proposed in
+[STATUS.md](STATUS.md) and decided when the owner has seen them drawn.

@@ -3,7 +3,7 @@
 The handoff between sessions. Read this first; rewrite it last. It describes the present, so
 replace what is stale instead of appending. History lives in git.
 
-Last updated: 2026-10-07, at the end of session 4 (the first feature: recording an expense).
+Last updated: 2026-10-07, after session 4 (the first feature: recording an expense).
 
 ## Current state
 
@@ -126,26 +126,39 @@ What was not verified:
 2. **The baseline profile and macrobenchmark**, in a short session of their own
    ([decisions/0032](decisions/0032-baseline-profile-in-its-own-session.md)). The module, the
    plugin and three libraries need the owner's approval.
-3. **The next feature.** The owner said the home page will hold statistics, so the overview of
-   a period is the natural candidate; editing and deleting a record is the other, because a
-   wrong entry cannot be corrected today. Confirm the choice and the scope with the owner.
-4. **The mascot's final artwork**, drawn from the approved sketches in `docs/design/mascot/`,
+3. **Editing and deleting a record**, chosen by the owner as the next feature, because a wrong
+   entry cannot be corrected today. Agree its scope with the owner at the start of the session.
+4. **Recording an income**, then **the statistics on the home page**. Savings and the balance
+   mean nothing until income can be recorded, so income comes first. The proposal for the
+   statistics, made in words and not yet seen drawn or approved:
+   - this month so far: spent, earned, and the difference between them, as three figures;
+   - spending by category for the month, as the horizontal bars [DESIGN.md](DESIGN.md#charts)
+     describes;
+   - month over month for the last six months, as its pairs of bars;
+   - what was saved over the last three full months, in total and month by month;
+   - this month up to today's day beside last month up to the same day, stated as two
+     figures and never as a verdict.
+   An average per day would need division, which `Money` does not have on purpose
+   ([ARCHITECTURE.md](ARCHITECTURE.md#money)); decide the rounding before proposing one.
+   Draw the alternatives for the owner before building any of it.
+5. **The mascot's final artwork**, drawn from the approved sketches in `docs/design/mascot/`,
    then the launcher icon and splash screen. Show the owner drawings; do not describe them.
-5. Before any release build goes onto a phone to be used: create the upload keystore
+6. Before any release build goes onto a phone to be used: create the upload keystore
    ([RELEASE.md](RELEASE.md)), finish the schema, and repeat the backup and restore round trip
    on that build.
 
 ## Open questions for the owner
 
-- **The feature lists in [PRODUCT.md](PRODUCT.md)** are a first draft. Confirm the scope of
-  each feature before building it.
-- **Should the repository be public or private?**
-- **What the home page shows** once statistics exist, and whether the list of latest entries
-  stays on it.
+- **Which statistics the home page shows.** A proposal is under Next; the owner decides after
+  seeing it drawn. Whether the list of latest entries stays on the home page is part of that.
 
 ## Answered by the owner
 
 - The name Troško is final. The first release uses the euro and targets Croatia.
+- The feature lists in [PRODUCT.md](PRODUCT.md) are final for the first version.
+- The repository is public for now, while the work is being done. Nothing private may be
+  committed, and that includes real bank statements: the owner has offered some as samples
+  for the later import feature, and they must stay outside the repository.
 - Commits are authored with `marko7.cirimotic@gmail.com`, set in the repository's local git
   config; do not commit with any other address.
 - Backup: device transfer always, cloud only when end-to-end encrypted. No encryption of our
