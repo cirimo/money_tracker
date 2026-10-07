@@ -84,19 +84,16 @@ class ExpenseEditViewModel(
     /** Choosing the chosen category again lets go of it. */
     fun onCategoryChosen(id: CategoryId) = updateForm { it.copy(categoryId = if (it.categoryId == id) null else id) }
 
-    fun onDayBack() = updateForm { it.copy(pickedDate = it.pickedDate?.minusDays(1)) }
+    /** An arrow beside the date was pressed: [days] is -1 or 1. */
+    fun onDayStepped(days: Long) {
+        form.value?.pickedDate?.let { onDayPicked(it.plusDays(days)) }
+    }
 
-    fun onDayForward() {
+    /** A day later than a correction may carry changes nothing. */
+    fun onDayPicked(date: LocalDate) {
         onResumed()
-        val latest = status.value.original?.latestDay(today.value) ?: return
-        updateForm {
-            it.copy(
-                pickedDate =
-                    it.pickedDate?.plusDays(1)?.takeIf { next ->
-                        next <= latest
-                    } ?: it.pickedDate,
-            )
-        }
+        val latest = status.value.original?.latestDay(today.value)
+        if (latest != null && date <= latest) updateForm { it.copy(pickedDate = date) }
     }
 
     fun onNoteChanged(note: String) = updateForm { it.copy(note = note.take(NewRecord.NOTE_MAX_LENGTH)) }
@@ -242,6 +239,7 @@ private fun editing(
                 day = DayLabel.of(date, today),
                 note = form.note.trim().ifEmpty { null },
             ),
+        days = DayPickerDays(selected = date, today = today, latest = original.latestDay(today)),
         isAskingToDelete = status.isAskingToDelete,
         canDelete = !status.isBusy,
         saveFailed = status.saveFailed,

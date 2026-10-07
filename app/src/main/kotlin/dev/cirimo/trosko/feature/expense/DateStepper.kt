@@ -13,6 +13,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import dev.cirimo.trosko.R
 import dev.cirimo.trosko.designsystem.component.InkGlyph
+import dev.cirimo.trosko.designsystem.component.QuietButton
 import dev.cirimo.trosko.designsystem.component.QuietIconButton
 import dev.cirimo.trosko.designsystem.component.TroskoText
 import dev.cirimo.trosko.designsystem.theme.TroskoDimens
@@ -23,6 +24,9 @@ import dev.cirimo.trosko.format.dayLabelText
 /**
  * Changes the date one day at a time. Almost every expense is from today or yesterday, so two
  * arrows are faster than a calendar. The forward arrow is disabled on today.
+ *
+ * @param onDayClick with it the day itself is a button, which opens a calendar for a date
+ * further back; null where there is no calendar.
  */
 @Composable
 fun DateStepper(
@@ -31,6 +35,7 @@ fun DateStepper(
     onBack: () -> Unit,
     onForward: () -> Unit,
     modifier: Modifier = Modifier,
+    onDayClick: (() -> Unit)? = null,
 ) {
     val dayText = dayLabelText(day)
     val dayDescription = stringResource(R.string.expense_entry_date_description, dayText)
@@ -45,16 +50,17 @@ fun DateStepper(
             contentDescription = stringResource(R.string.expense_entry_day_back_description),
             onClick = onBack,
         )
-        TroskoText(
-            text = dayText,
-            // Announced when it changes, because the arrows that change it say nothing new.
-            modifier =
-                Modifier.semantics {
-                    contentDescription = dayDescription
-                    liveRegion = LiveRegionMode.Polite
-                },
-            style = TroskoTheme.typography.label,
-        )
+        // Announced when it changes, because the arrows that change it say nothing new.
+        val announced =
+            Modifier.semantics {
+                contentDescription = dayDescription
+                liveRegion = LiveRegionMode.Polite
+            }
+        if (onDayClick == null) {
+            TroskoText(text = dayText, modifier = announced, style = TroskoTheme.typography.label)
+        } else {
+            QuietButton(text = dayText, onClick = onDayClick, modifier = announced)
+        }
         QuietIconButton(
             glyph = InkGlyph.ChevronRight,
             contentDescription = stringResource(R.string.expense_entry_day_forward_description),

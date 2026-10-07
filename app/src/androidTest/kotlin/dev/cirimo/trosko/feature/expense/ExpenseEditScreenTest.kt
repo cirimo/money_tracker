@@ -34,6 +34,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.Currency
 import java.util.UUID
 
@@ -45,7 +47,8 @@ class ExpenseEditScreenTest {
     // Every expected text is read from resources or made by the app's own formatter in the
     // device's language, so the tests pass whatever language the device is set to.
     private val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
-    private val formatter = MoneyFormatter(context.resources.configuration.locales[0])
+    private val locale = context.resources.configuration.locales[0]
+    private val formatter = MoneyFormatter(locale)
     private val euro = Currency.getInstance("EUR")
     private val clock = SettableClock(LocalDate.of(2026, 10, 7))
     private val records = FakeRecordRepository(clock)
@@ -77,8 +80,9 @@ class ExpenseEditScreenTest {
                     uiState = uiState,
                     onKey = viewModel::onKey,
                     onCategoryClick = viewModel::onCategoryChosen,
-                    onDayBack = viewModel::onDayBack,
-                    onDayForward = viewModel::onDayForward,
+                    onDayBack = { viewModel.onDayStepped(days = -1) },
+                    onDayForward = { viewModel.onDayStepped(days = 1) },
+                    onDayPick = viewModel::onDayPicked,
                     onNoteChange = viewModel::onNoteChanged,
                     onSave = viewModel::onSave,
                     onDeleteClick = { viewModel.onDeleteQuestion(isAsking = true) },
@@ -128,6 +132,39 @@ class ExpenseEditScreenTest {
                 .single()
                 .second.amount,
         )
+    }
+
+    @Test
+    fun dayChosenFromTheCalendarIsWrittenAndTheKeypadComesBack() {
+        show()
+        val fullDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(locale)
+
+        // The record is dated the 6th, which the date between the arrows calls yesterday.
+        composeRule.onNodeWithText(context.getString(R.string.day_yesterday)).performClick()
+        composeRule.onNodeWithContentDescription(fullDate.format(LocalDate.of(2026, 10, 6))).assertIsSelected()
+        composeRule.onNodeWithContentDescription(fullDate.format(LocalDate.of(2026, 10, 2))).performClick()
+        saveButton.assertIsEnabled().performClick()
+
+        assertEquals(
+            LocalDate.of(2026, 10, 2),
+            records.replaced
+                .single()
+                .second.occurredOn,
+        )
+    }
+
+    @Test
+    fun calendarOffersNoDayAfterTodayAndNoLaterMonth() {
+        show()
+        val fullDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(locale)
+
+        composeRule.onNodeWithText(context.getString(R.string.day_yesterday)).performClick()
+
+        composeRule.onNodeWithContentDescription(fullDate.format(LocalDate.of(2026, 10, 7))).assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(fullDate.format(LocalDate.of(2026, 10, 8))).assertDoesNotExist()
+        composeRule
+            .onNodeWithContentDescription(context.getString(R.string.expense_calendar_month_forward_description))
+            .assertIsNotEnabled()
     }
 
     @Test

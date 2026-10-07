@@ -14,6 +14,7 @@ sealed interface ExpenseEditUiState {
      * @property pad what the pad shows; its main button may be pressed once something differs
      * from what is written down and can be written.
      * @property preview the record as the list would show it with what the pad says now.
+     * @property days what a calendar page for the record's date needs to know.
      * @property isAskingToDelete the question whether to delete stands in place of the heading.
      * @property canDelete false while a write is under way.
      * @property saveFailed the last correction did not reach storage; what was typed is still
@@ -25,6 +26,7 @@ sealed interface ExpenseEditUiState {
     data class Editing(
         val pad: ExpensePadState,
         val preview: RecordLine,
+        val days: DayPickerDays,
         val isAskingToDelete: Boolean,
         val canDelete: Boolean,
         val saveFailed: Boolean,

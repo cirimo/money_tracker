@@ -36,6 +36,11 @@
     <!-- A java.time pattern for a short date with its weekday, as this language writes it. -->
     <string name="day_pattern">EEE d. M.</string>
 
+    <!-- A java.time pattern for a month and its year as the heading of a calendar page. -->
+    <string name="month_pattern">LLLL yyyy.</string>
+    <string name="expense_calendar_month_back_description">Mjesec ranije</string>
+    <string name="expense_calendar_month_forward_description">Mjesec kasnije</string>
+
     <!-- Built-in categories. Keep the names short: each has to fit on a small sticker. -->
     <string name="category_groceries">Namirnice</string>
     <string name="category_eating_out">Vani</string>

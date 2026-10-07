@@ -170,7 +170,7 @@ class ExpenseEditViewModelTest {
             val viewModel = viewModel()
             viewModel.retype("15,20")
             viewModel.onCategoryChosen(transport.id)
-            viewModel.onDayBack()
+            viewModel.onDayStepped(days = -1)
             viewModel.onNoteChanged(" tram ")
 
             viewModel.onSave()
@@ -207,13 +207,42 @@ class ExpenseEditViewModelTest {
             val viewModel = viewModel()
             val forwardOnYesterday = viewModel.editing.pad.canStepDayForward
 
-            viewModel.onDayForward()
-            viewModel.onDayForward()
+            viewModel.onDayStepped(days = 1)
+            viewModel.onDayStepped(days = 1)
 
             assertTrue(forwardOnYesterday)
             assertEquals(DayLabel.Today, viewModel.editing.pad.day)
             assertFalse(viewModel.editing.pad.canStepDayForward)
             assertTrue(viewModel.editing.pad.canSave)
+        }
+
+    @Test
+    fun `a day chosen from the calendar is where the record is filed`() =
+        runTest {
+            val viewModel = viewModel()
+
+            viewModel.onDayPicked(today.minusDays(20))
+            viewModel.onSave()
+
+            assertEquals(today.minusDays(20), viewModel.editing.days.selected)
+            assertEquals(
+                today.minusDays(20),
+                records.replaced
+                    .single()
+                    .second.occurredOn,
+            )
+        }
+
+    @Test
+    fun `a day after today cannot be chosen and the calendar knows where it ends`() =
+        runTest {
+            val viewModel = viewModel()
+
+            viewModel.onDayPicked(today.plusDays(1))
+
+            assertEquals(today.minusDays(1), viewModel.editing.days.selected)
+            assertEquals(today, viewModel.editing.days.latest)
+            assertEquals(today, viewModel.editing.days.today)
         }
 
     @Test

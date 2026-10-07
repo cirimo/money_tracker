@@ -49,6 +49,9 @@ private const val LARGE_TEXT_SCALE = 1.3f
  *
  * @param failure what went wrong with the last attempt to write, already in words; null when
  * nothing did.
+ * @param onDayClick what pressing the date itself does; null where it does nothing.
+ * @param calendar when given, it is shown in place of the categories, the note and the keypad,
+ * while a day is being chosen from it.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -63,12 +66,13 @@ internal fun ExpensePad(
     onSave: () -> Unit,
     modifier: Modifier = Modifier,
     failure: String? = null,
+    onDayClick: (() -> Unit)? = null,
+    calendar: (@Composable () -> Unit)? = null,
 ) {
     val formatter = rememberMoneyFormatter()
     val amountText = formatter.formatTyping(state.amount)
     val amountDescription = stringResource(R.string.expense_entry_amount_description, amountText)
     val selected = state.selectedCategory
-    val chipColumns = if (LocalDensity.current.fontScale > LARGE_TEXT_SCALE) CHIP_COLUMNS_LARGE_TEXT else CHIP_COLUMNS
 
     Column(
         modifier = modifier.padding(top = TroskoDimens.SpaceM, bottom = TroskoDimens.SpaceL),
@@ -97,38 +101,55 @@ internal fun ExpensePad(
                 canStepForward = state.canStepDayForward,
                 onBack = onDayBack,
                 onForward = onDayForward,
+                onDayClick = onDayClick,
             )
         }
-        FlowRow(
-            modifier = Modifier.fillMaxWidth().selectableGroup(),
-            // Wide enough that the second outline of the chosen chip clears its neighbours.
-            horizontalArrangement = Arrangement.spacedBy(TroskoDimens.SpaceM),
-            verticalArrangement = Arrangement.spacedBy(TroskoDimens.SpaceM),
-            maxItemsInEachRow = chipColumns,
-        ) {
-            state.categories.forEach { category ->
-                CategoryChip(
-                    name = categoryNameText(category.name),
-                    glyph = categoryGlyph(category.icon),
-                    fill = categoryFill(category.colour),
-                    selected = category.id == state.selectedCategoryId,
-                    onClick = { onCategoryClick(category.id) },
-                    modifier = Modifier.weight(1f),
-                )
-            }
+        if (calendar != null) {
+            calendar()
+        } else {
+            Categories(state = state, onCategoryClick = onCategoryClick)
+            TroskoTextField(
+                value = state.note,
+                onValueChange = onNoteChange,
+                placeholder = stringResource(R.string.expense_entry_note_placeholder),
+                modifier = Modifier.fillMaxWidth().onFocusChanged { onNoteFocusChange(it.isFocused) },
+            )
+            ExpenseKeypad(
+                separator = formatter.decimalSeparator,
+                canSave = state.canSave,
+                onKey = onKey,
+                onSave = onSave,
+            )
         }
-        TroskoTextField(
-            value = state.note,
-            onValueChange = onNoteChange,
-            placeholder = stringResource(R.string.expense_entry_note_placeholder),
-            modifier = Modifier.fillMaxWidth().onFocusChanged { onNoteFocusChange(it.isFocused) },
-        )
-        ExpenseKeypad(
-            separator = formatter.decimalSeparator,
-            canSave = state.canSave,
-            onKey = onKey,
-            onSave = onSave,
-        )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun Categories(
+    state: ExpensePadState,
+    onCategoryClick: (CategoryId) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val chipColumns = if (LocalDensity.current.fontScale > LARGE_TEXT_SCALE) CHIP_COLUMNS_LARGE_TEXT else CHIP_COLUMNS
+
+    FlowRow(
+        modifier = modifier.fillMaxWidth().selectableGroup(),
+        // Wide enough that the second outline of the chosen chip clears its neighbours.
+        horizontalArrangement = Arrangement.spacedBy(TroskoDimens.SpaceM),
+        verticalArrangement = Arrangement.spacedBy(TroskoDimens.SpaceM),
+        maxItemsInEachRow = chipColumns,
+    ) {
+        state.categories.forEach { category ->
+            CategoryChip(
+                name = categoryNameText(category.name),
+                glyph = categoryGlyph(category.icon),
+                fill = categoryFill(category.colour),
+                selected = category.id == state.selectedCategoryId,
+                onClick = { onCategoryClick(category.id) },
+                modifier = Modifier.weight(1f),
+            )
+        }
     }
 }
 

@@ -1,5 +1,6 @@
 package dev.cirimo.trosko.feature.expense
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +46,7 @@ import dev.cirimo.trosko.domain.money.Money
 import dev.cirimo.trosko.format.DayLabel
 import dev.cirimo.trosko.format.RecordLine
 import dev.cirimo.trosko.format.RecordLineRow
+import java.time.LocalDate
 import java.util.Currency
 import java.util.UUID
 
@@ -62,6 +65,7 @@ fun ExpenseEditScreen(
     onCategoryClick: (CategoryId) -> Unit,
     onDayBack: () -> Unit,
     onDayForward: () -> Unit,
+    onDayPick: (LocalDate) -> Unit,
     onNoteChange: (String) -> Unit,
     onSave: () -> Unit,
     onDeleteClick: () -> Unit,
@@ -72,6 +76,10 @@ fun ExpenseEditScreen(
 ) {
     // A physical keyboard types the amount too, except while it is writing the note.
     var isNoteFocused by remember { mutableStateOf(false) }
+    // Whether the calendar is open is the screen's own business; nothing about the record
+    // changes until a day is chosen. The system's back closes it before it leaves the screen.
+    var isCalendarOpen by rememberSaveable { mutableStateOf(false) }
+    BackHandler(enabled = isCalendarOpen) { isCalendarOpen = false }
 
     Box(
         modifier =
@@ -119,6 +127,21 @@ fun ExpenseEditScreen(
                             failure =
                                 if (uiState.saveFailed) {
                                     stringResource(R.string.expense_entry_save_failed_message)
+                                } else {
+                                    null
+                                },
+                            onDayClick = { isCalendarOpen = !isCalendarOpen },
+                            calendar =
+                                if (isCalendarOpen) {
+                                    {
+                                        DayPicker(
+                                            days = uiState.days,
+                                            onDayPick = { day ->
+                                                onDayPick(day)
+                                                isCalendarOpen = false
+                                            },
+                                        )
+                                    }
                                 } else {
                                     null
                                 },
@@ -242,6 +265,12 @@ private fun ExpenseEditScreenPreview() {
                             day = DayLabel.Yesterday,
                             note = "kruh i mlijeko",
                         ),
+                    days =
+                        DayPickerDays(
+                            LocalDate.of(2026, 10, 6),
+                            LocalDate.of(2026, 10, 7),
+                            LocalDate.of(2026, 10, 7),
+                        ),
                     isAskingToDelete = false,
                     canDelete = true,
                     saveFailed = false,
@@ -252,6 +281,7 @@ private fun ExpenseEditScreenPreview() {
             onCategoryClick = {},
             onDayBack = {},
             onDayForward = {},
+            onDayPick = {},
             onNoteChange = {},
             onSave = {},
             onDeleteClick = {},
