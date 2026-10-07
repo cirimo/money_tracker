@@ -1,0 +1,33 @@
+# Overrides on top of detekt's default configuration (buildUponDefaultConfig = true).
+# Keep this file short: add an override only when a default rule is wrong for this project,
+# and say why next to it.
+
+naming:
+  FunctionNaming:
+    # Composable functions are PascalCase by Compose convention.
+    ignoreAnnotated: ['Composable']
+  TopLevelPropertyNaming:
+    # Compose constants such as `val DefaultPadding = 16.dp` are PascalCase by convention.
+    constantPattern: '[A-Z][A-Za-z0-9_]*'
+
+complexity:
+  LongParameterList:
+    # Composables legitimately take many parameters, most of them with defaults.
+    ignoreDefaultParameters: true
+    ignoreAnnotated: ['Composable']
+  LongMethod:
+    # A composable's length is mostly declarative layout, not logic.
+    ignoreAnnotated: ['Composable']
+
+style:
+  MagicNumber:
+    # Layout dimensions and colours in composables and previews read better inline.
+    ignoreAnnotated: ['Composable', 'Preview']
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+  UnusedPrivateMember:
+    # Preview functions are private and only referenced by Android Studio.
+    ignoreAnnotated: ['Preview']
+  MaxLineLength:
+    # Line length is owned by ktlint via .editorconfig.
+    active: false
