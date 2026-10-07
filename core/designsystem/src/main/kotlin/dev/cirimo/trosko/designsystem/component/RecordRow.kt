@@ -2,6 +2,7 @@ package dev.cirimo.trosko.designsystem.component
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +25,9 @@ private const val LARGE_TEXT_SCALE = 1.3f
  * (the date, a note) on one side, and the amount on the other. A screen reader hears the whole
  * row as one sentence.
  *
+ * With [onClick] the row is a sticker to press, which opens the record: it goes flat under the
+ * finger like a button, is announced as one, and shows keyboard focus.
+ *
  * @param amount already formatted for the locale, sign included.
  * @param fill the category's sticker colour, used for the icon's badge.
  */
@@ -35,16 +39,13 @@ fun RecordRow(
     glyph: InkGlyph,
     fill: Color,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) {
     // With enlarged text the amount no longer fits beside the name without breaking a word, so
     // it moves to a line of its own under it.
     val isTextLarge = LocalDensity.current.fontScale > LARGE_TEXT_SCALE
 
-    StickerSurface(
-        fill = TroskoTheme.colors.card,
-        modifier = modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
-        contentAlignment = Alignment.CenterStart,
-    ) {
+    val content: @Composable BoxScope.() -> Unit = {
         Row(
             modifier = Modifier.padding(horizontal = TroskoDimens.SpaceM, vertical = TroskoDimens.SpaceS),
             horizontalArrangement = Arrangement.spacedBy(TroskoDimens.SpaceM),
@@ -67,6 +68,24 @@ fun RecordRow(
             if (!isTextLarge) TroskoText(text = amount, style = TroskoTheme.typography.label)
         }
     }
+
+    if (onClick == null) {
+        StickerSurface(
+            fill = TroskoTheme.colors.card,
+            modifier = modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
+            contentAlignment = Alignment.CenterStart,
+            content = content,
+        )
+    } else {
+        // Being clickable already makes the row one sentence to a screen reader.
+        PressableSticker(
+            fill = TroskoTheme.colors.card,
+            onClick = onClick,
+            modifier = modifier.fillMaxWidth(),
+            contentAlignment = Alignment.CenterStart,
+            content = content,
+        )
+    }
 }
 
 @Preview(name = "light")
@@ -75,6 +94,6 @@ fun RecordRow(
 private fun RecordRowPreview() {
     ThemePreview {
         RecordRow("Namirnice", "Danas · kruh i mlijeko", "−12,50 €", InkGlyph.Basket, TroskoTheme.colors.green)
-        RecordRow("Režije", "pon 5. 10.", "−61,37 €", InkGlyph.Bolt, TroskoTheme.colors.yellow)
+        RecordRow("Režije", "pon 5. 10.", "−61,37 €", InkGlyph.Bolt, TroskoTheme.colors.yellow, onClick = {})
     }
 }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -35,6 +36,7 @@ internal fun PressableSticker(
     shape: Shape = TroskoTheme.shapes.sticker,
     enabled: Boolean = true,
     selected: Boolean? = null,
+    contentAlignment: Alignment = Alignment.Center,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -81,6 +83,7 @@ internal fun PressableSticker(
                 selected == true -> SecondOutline.Solid
                 else -> null
             },
+        contentAlignment = contentAlignment,
         content = content,
     )
 }

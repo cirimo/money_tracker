@@ -19,4 +19,5 @@ enum class InkGlyph(
     Backspace("M9 6h11v12H9l-5-6zM12.5 10l4 4M16.5 10l-4 4"),
     ChevronLeft("M14 6l-6 6 6 6"),
     ChevronRight("M10 6l6 6-6 6"),
+    Trash("M5 7h14M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"),
 }
