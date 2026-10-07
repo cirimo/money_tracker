@@ -33,4 +33,17 @@ index below.
 | [0008](0008-application-id.md) | Application id `dev.cirimo.trosko` | accepted |
 | [0009](0009-min-sdk-26.md) | Minimum SDK 26 | accepted |
 | [0010](0010-quality-tooling.md) | Spotless with ktlint, detekt, strict Lint, one check command | accepted |
-| [0011](0011-provisional-placeholders.md) | Provisional placeholders awaiting the architecture and design sessions | accepted |
+| [0011](0011-provisional-placeholders.md) | Provisional placeholders awaiting the architecture and design sessions | accepted; backup superseded by 0020 |
+| [0012](0012-layers-and-state-flow.md) | Three layers and one-way state flow | accepted |
+| [0013](0013-module-layout.md) | Four modules, features as packages | accepted |
+| [0014](0014-manual-dependency-injection.md) | Manual dependency injection | accepted |
+| [0015](0015-navigation-3.md) | Navigation 3 | accepted |
+| [0016](0016-room-3-and-migrations.md) | Room 3 on bundled SQLite, with hand-written migrations | accepted |
+| [0017](0017-money-type.md) | Money is integer minor units with a currency | accepted |
+| [0018](0018-domain-model-and-identifiers.md) | One record model, categories with kinds, UUID keys | accepted |
+| [0019](0019-dates-and-periods.md) | Dates are local dates, periods are half-open ranges | accepted |
+| [0020](0020-android-backup.md) | Android backup: device transfer always, cloud only when encrypted | accepted |
+| [0021](0021-export-and-restore.md) | Export as CSV and JSON, restore from JSON | accepted |
+| [0022](0022-no-app-level-encryption.md) | No encryption of our own | accepted |
+| [0023](0023-no-network-and-no-crash-sdk.md) | No network access, no crash reporting SDK | accepted |
+| [0024](0024-testing-and-performance-guardrails.md) | Testing per layer, Compose rules and performance guardrails | accepted |

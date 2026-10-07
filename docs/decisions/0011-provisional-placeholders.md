@@ -1,6 +1,7 @@
 # 0011. Provisional placeholders awaiting the architecture and design sessions
 
-- **Status**: accepted, and expected to be superseded piece by piece
+- **Status**: accepted, and expected to be superseded piece by piece. The backup item is
+  superseded by [0020](0020-android-backup.md).
 - **Date**: 2026-10-07, bootstrap session
 
 ## Context
