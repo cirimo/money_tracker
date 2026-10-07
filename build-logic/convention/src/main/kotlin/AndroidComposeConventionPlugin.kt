@@ -35,6 +35,9 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
                 "debugImplementation"(libs.library("androidx-compose-ui-tooling"))
 
                 "androidTestImplementation"(libs.library("androidx-compose-ui-test-junit4"))
+                // Compose UI tests pull in an old Espresso transitively, and that one crashes on
+                // Android 14 and newer (InputManager.getInstance was removed). Pin a current one.
+                "androidTestImplementation"(libs.library("androidx-test-espresso-core"))
                 "debugImplementation"(libs.library("androidx-compose-ui-test-manifest"))
             }
         }
