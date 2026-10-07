@@ -51,6 +51,7 @@ those folders. `res/resources.properties` names the default locale and does not 
 - Adding a permission, an exported component, an intent filter or a new `<application>`
   attribute affects the Play Store listing and the data safety form. Ask the owner first and
   update [docs/RELEASE.md](../../docs/RELEASE.md).
-- Backup is switched off in three places that must agree: `android:allowBackup`,
-  `xml/data_extraction_rules.xml` and `xml/full_backup_content.xml`. Changing it is an
-  architecture decision; see [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md).
+- What Android backup may carry is set in three places that must agree: `android:allowBackup`,
+  `xml/data_extraction_rules.xml` and `xml/full_backup_content.xml`. The rule they express is in
+  [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md#backup-export-and-restore); changing it
+  needs the owner's agreement.

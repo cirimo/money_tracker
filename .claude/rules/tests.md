@@ -45,6 +45,10 @@ covers how tests are written and run in this project.
 - An emulator named `Medium_Phone_API_36.1` exists on the owner's machine. Start it headless
   with `emulator.exe -avd Medium_Phone_API_36.1 -no-window -no-audio` from the SDK's
   `emulator` folder and stop it with `adb -s emulator-5554 emu kill` when you are done.
-- Results are written to `app/build/outputs/androidTest-results/` and an HTML report to
-  `app/build/reports/androidTests/`.
+- Results are written to `<module>/build/outputs/androidTest-results/` and an HTML report to
+  `<module>/build/reports/androidTests/`, for `app` and for `core/data`.
+- Database tests live in `core/data/src/androidTest` and open an in-memory database with the
+  bundled SQLite driver, as `TroskoDatabaseTest` does. They cannot run on the JVM.
+- A view model test replaces the main dispatcher and collects the state in `backgroundScope`,
+  as `PlaceholderViewModelTest` does; without a collector `stateIn` never starts.
 - Say in your report whether you ran the instrumented tests, and on what.

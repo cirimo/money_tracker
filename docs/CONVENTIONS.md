@@ -8,8 +8,9 @@ Formatting is not described in this document. Spotless and ktlint own it, config
 [.editorconfig](../.editorconfig), and `.\gradlew.bat spotlessApply` fixes it. Arguing with the
 formatter by hand is wasted time.
 
-This document deliberately says nothing about layers, modules, state holders, dependency
-injection or navigation. Those belong to [ARCHITECTURE.md](ARCHITECTURE.md). It also says nothing
+This document does not describe layers, modules, state holders, dependency injection or
+navigation. Those belong to [ARCHITECTURE.md](ARCHITECTURE.md); only the coding rules that
+follow from them are here. It also says nothing
 about colours, type or motion values, which belong to [DESIGN.md](DESIGN.md).
 
 ## Money
@@ -37,8 +38,9 @@ What follows from that:
 - Percentages and ratios derived from money for charts may be floating point, because they are
   drawing instructions and not money. Never convert them back into an amount.
 
-The exact representation (integer minor units, `BigDecimal`, a dedicated value class) is an open
-decision for the architecture session. Until it is made, do not introduce a money type.
+The one type that represents an amount is `Money` in `:core:domain`; what it allows and why is
+in [ARCHITECTURE.md](ARCHITECTURE.md#money). Do not pass an amount around as a bare `Long`
+outside the database layer, and do not add a second money type.
 
 ## Strings
 
@@ -98,7 +100,10 @@ Details on the resource files themselves are in
   what you give them, and a composable that ignores its modifier cannot be reused.
 - Hoist state. A composable receives the values it shows and lambdas for the events it raises,
   and does not reach out for data itself. This is what makes it previewable, testable and
-  reusable. Where that state ultimately lives is an architecture decision.
+  reusable. The state lives in the screen's view model; the four parts of a screen are
+  described in [ARCHITECTURE.md](ARCHITECTURE.md#the-ui-layer).
+- Wrap what a screen draws in `TroskoTheme`, and build it from the design system's components
+  once they exist. A feature never uses a UI library directly.
 - Keep composables free of business logic. They decide how something looks, not what is true.
   Anything involving money, dates or rules is computed elsewhere and passed in ready to show.
 - Do not read or write anything slow during composition, and do not create objects in
@@ -123,8 +128,18 @@ Details on the resource files themselves are in
   how it is implemented. Avoid `Manager`, `Helper`, `Util` and `Data` as name parts; they are a
   sign that the responsibility has not been thought through.
 - Booleans read as statements: `isSaving`, `hasNote`. Event lambdas are `onSomething`.
-- How packages and modules are divided is an architecture decision. Until it is made, do not
-  create a package structure beyond the root.
+- Which module and package a file belongs in is set out in
+  [ARCHITECTURE.md](ARCHITECTURE.md#modules). Each module's root package is
+  `dev.cirimo.trosko` followed by the module's name, except `:app`, which uses the root itself.
+- Everything in `:core:domain` is immutable: `val` properties and read-only collections only.
+  The Compose compiler is told to trust this, so a mutable type there causes stale UI.
+- In `:core:data`, everything except `Repositories` is `internal`. If the app needs something
+  from the data layer, it gets it through a repository interface declared in the domain.
+- The current date and time come from a `java.time.Clock` that is passed in. Calling
+  `LocalDate.now()` or `Instant.now()` without one makes the code untestable around midnight
+  and month ends, which is exactly where this app's logic lives.
+- A value stored in the database as text that stands for an enum goes through an explicit
+  mapping, as in `RecordKindColumn.kt`, never through the enum's `name`.
 
 ## Testing
 
@@ -141,6 +156,8 @@ Details on the resource files themselves are in
 - Test names describe the behaviour in a sentence. Unit tests may use backticked names;
   instrumented tests may not, because Android's runtime rejects them on older API levels.
 - Tests never depend on the device language. Read expected text from resources.
+- Which layer is tested where is in [ARCHITECTURE.md](ARCHITECTURE.md#testing). Fakes of
+  repository interfaces are written by hand; there is no mocking library.
 
 More detail is in [.claude/rules/tests.md](../.claude/rules/tests.md).
 

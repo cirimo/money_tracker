@@ -44,7 +44,8 @@ use `./gradlew`. The task names are the same.
 
 `check` is the single gate and CI runs the same thing. It covers Spotless with ktlint (formatting),
 detekt (static analysis), Android Lint with warnings as errors, the JVM unit tests, and compiling
-the instrumented tests. It does not run instrumented tests, because those need a device.
+the instrumented tests. It does not run instrumented tests, because those need a device. That
+includes every database test, so run `connectedDebugAndroidTest` when `core/data` changes.
 
 `adb` is not on PATH. Call it by its full path:
 
@@ -83,9 +84,13 @@ breaking one is expensive to undo.
 - Do not claim something works unless you ran it and saw it pass. Say plainly what you did not run.
 - Do not make a failing check pass by disabling or weakening it. After three distinct failed
   attempts at a fix, stop and show the owner the error and what you tried.
-- Architecture belongs to [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and design to
-  [docs/DESIGN.md](docs/DESIGN.md). While either is still a stub, do not make its decisions
-  as a side effect of other work. Ask instead.
+- Follow [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): what goes in which module, and what may
+  depend on what. Changing it is a decision for the owner, not a side effect of a feature.
+- Once a release build has been installed on a real phone, the database schema and the export
+  format only change through tested migrations.
+  See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#migrations).
+- Design belongs to [docs/DESIGN.md](docs/DESIGN.md), which is still a stub. Do not make its
+  decisions as a side effect of other work. Ask instead.
 
 ## Map of the documentation
 
@@ -95,7 +100,7 @@ breaking one is expensive to undo.
 | [docs/WORKFLOW.md](docs/WORKFLOW.md) | Before your first commit of a session, and whenever you are unsure how to proceed, what done means, or what you may do without asking. |
 | [docs/CONVENTIONS.md](docs/CONVENTIONS.md) | Before writing or reviewing Kotlin, Compose, tests or resources. |
 | [docs/PRODUCT.md](docs/PRODUCT.md) | Before building or changing a feature, and to settle any "is this fun enough or too much" argument. |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Before adding a module, a library, a screen, or anything that stores or moves data. |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Before writing any feature code, and before adding a module, a library, a screen, or anything that stores or moves data. |
 | [docs/DESIGN.md](docs/DESIGN.md) | Before touching anything the user sees, hears or feels. |
 | [docs/RELEASE.md](docs/RELEASE.md) | Before touching signing, versioning, permissions, the manifest, or anything Google Play cares about. |
 | [docs/decisions/](docs/decisions/README.md) | To learn why something is the way it is, and before proposing to change it. |
@@ -106,10 +111,13 @@ catalog, Android resources, tests, and these documents. You do not need to read 
 ## Where things are
 
 ```
-app/                    the only module for now: the Android application
+app/                    the application: composition root, navigation, one package per feature
+core/domain/            plain Kotlin: Money, the model, rules, repository interfaces
+core/data/              the Room database, storage, export; schemas/ holds exported schemas
+core/designsystem/      theme and components, empty until the design session
 build-logic/convention/ convention plugins; all shared build configuration lives here
 gradle/libs.versions.toml  every version and dependency coordinate
-config/detekt/          detekt overrides
+config/                 detekt overrides and the Compose stability list
 .github/workflows/      CI
 docs/                   everything described in the map above
 ```
