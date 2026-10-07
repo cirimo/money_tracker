@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        The paper colour, for the window before Compose has drawn its first frame. It must match
+        TroskoColors.paper in core/designsystem; every other colour lives there, in Kotlin.
+    -->
+    <color name="window_background">#FFFDF6</color>
+</resources>

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--
-        Placeholder window theme taken straight from the platform. The real theme is
-        defined by the design session, see docs/DESIGN.md.
+        The window theme only covers the moment before Compose draws: it sets the paper colour so
+        the app does not flash white or black on launch. The real theme is TroskoTheme, in Kotlin.
     -->
-    <style name="Theme.Trosko" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Trosko" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
 </resources>
