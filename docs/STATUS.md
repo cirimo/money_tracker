@@ -67,6 +67,9 @@ What was verified by actually running it, on 2026-10-07:
 - The debug build was installed on the emulator and looked at in both themes: paper and ink
   swap correctly, the sticker has its outline and hard shadow, and Shantell Sans renders,
   including "š".
+- On the owner's phone (Samsung SM-G998B, Android 15, dark theme, Croatian): the same six
+  instrumented tests pass, and the themed placeholder was looked at; the Croatian text renders
+  in Shantell Sans with its diacritics.
 - Both fonts were checked at their source for licence (OFL 1.1) and Latin Extended coverage.
 - The fonts add about 0.8 MB to the release APK: 5.79 MB before, 6.57 MB after.
 - Text contrast was computed for both themes; the figures are in [DESIGN.md](DESIGN.md#colour).
@@ -77,7 +80,7 @@ on the owner's phone with an empty database; both native libraries are aligned f
 
 What was not verified:
 
-- The themed app on the owner's phone. The phone was not attached during this session.
+- The light theme on the owner's phone, which is set to dark.
 - `TroskoButton`: it compiles and has a preview, but no screen uses it yet, so its press
   animation and its behaviour with TalkBack and under reduced motion have not been seen running.
 - Reduced motion as a whole. The theme reads the system setting, but nothing was run with
