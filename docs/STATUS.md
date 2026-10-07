@@ -10,7 +10,7 @@ Last updated: 2026-10-07, at the end of session 2 (architecture).
 The architecture is decided, written down and built as a skeleton. There are no features yet,
 and no design: the app still shows one unstyled placeholder screen.
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) is complete, with decision records 0012 to 0024.
+- [ARCHITECTURE.md](ARCHITECTURE.md) is complete, with decision records 0012 to 0025.
 - Four modules: `:app`, `:core:domain`, `:core:data`, `:core:designsystem`.
 - Toolchain unchanged: Gradle 9.8.0, AGP 9.4.1, Kotlin 2.4.20, Compose BOM 2026.09.00
   ([decisions/0003](decisions/0003-toolchain-versions.md)). Added: KSP 2.3.12, Room 3.0.3,
@@ -55,15 +55,18 @@ What was verified by actually running it, on 2026-10-07:
 - KSP 2.3.12 and kotlinx.serialization 1.11.0 work with Kotlin 2.4.20, which neither
   documents.
 - The compose-rules checks are live: a deliberately wrong composable failed `spotlessCheck`.
+- On the owner's phone (Samsung SM-G998B, Android 15): the same six instrumented tests pass,
+  and the debug build was installed and launched, with `MainActivity` resumed and the database
+  files created.
 
 What was not verified:
 
-- Nothing was run on the owner's physical phone this session; it was not attached.
 - The release build has still never run on a device, because there is no keystore. R8 has
   therefore never been exercised against Room, Navigation 3 or serialization at runtime.
 - Backup and restore have never been observed working. On the emulator, `bmgr backupnow` with
   the local test transport reported that the transport rejected the package; the reason was
-  not established.
+  not established. It was not tried on the owner's phone, because a real backup uploads to the
+  owner's Google account and needs their say-so.
 - The size the bundled SQLite library adds to the APK, and its 16 KB page alignment.
 
 ## Next
@@ -84,9 +87,6 @@ What was not verified:
 - **The feature lists in [PRODUCT.md](PRODUCT.md)** are a first draft. Confirm the scope of
   each feature before building it.
 - **Should the repository be public or private?**
-- **CSV export and Croatian spreadsheets.** The planned CSV writes amounts with a dot. A
-  spreadsheet program set to Croatian expects a comma and may misread it. Should there be a
-  localised variant?
 
 ## Answered by the owner
 
@@ -95,7 +95,8 @@ What was not verified:
   config; do not commit with any other address.
 - Backup: device transfer always, cloud only when end-to-end encrypted. No encryption of our
   own. Export as CSV and JSON, with restore from JSON in the first release. No crash reporting
-  SDK. A category with records is archived, not deleted.
+  SDK. A category with records is archived, not deleted. The CSV follows the app language,
+  with a decimal comma in Croatian ([decisions/0025](decisions/0025-csv-follows-the-app-language.md)).
 - The release build is the owner's own "production", which the owner and friends will use
   before the Play release; its data must survive updates. The debug build's data is disposable.
   Friends move to the Play version through a JSON export and restore.

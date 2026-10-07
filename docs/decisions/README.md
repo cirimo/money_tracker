@@ -47,3 +47,4 @@ index below.
 | [0022](0022-no-app-level-encryption.md) | No encryption of our own | accepted |
 | [0023](0023-no-network-and-no-crash-sdk.md) | No network access, no crash reporting SDK | accepted |
 | [0024](0024-testing-and-performance-guardrails.md) | Testing per layer, Compose rules and performance guardrails | accepted |
+| [0025](0025-csv-follows-the-app-language.md) | The CSV export follows the app language | accepted |

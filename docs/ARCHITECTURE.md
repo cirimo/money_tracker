@@ -277,8 +277,9 @@ this and must be changed together.
 
 **Export** goes through the system file picker, so it needs no permission.
 
-- **CSV** is for people and spreadsheets: UTF-8, ISO dates, the amount as a decimal with a dot,
-  the currency in its own column. It is output only.
+- **CSV** is for people and spreadsheets, and is output only: UTF-8, ISO dates, the currency in
+  its own column. It follows the app language so that a spreadsheet program opens it correctly:
+  a decimal comma and semicolon-separated fields in Croatian, a dot and commas in English.
 - **JSON** is lossless and is what restore reads. It carries a `formatVersion`. Its shape is
   defined by its own serialisable classes in `transfer/`, separate from the entities and from
   the domain model, so the database can change without changing the file format.
