@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -31,11 +33,23 @@ fun TroskoButton(
         modifier = modifier.defaultMinSize(minHeight = TroskoDimens.ButtonHeight),
         enabled = enabled,
     ) {
-        TroskoText(
+        // The word stays whole on one line: on a narrow button, or with enlarged text, it shrinks
+        // to fit instead of breaking in the middle.
+        BasicText(
             text = text,
             modifier = Modifier.padding(horizontal = TroskoDimens.SpaceM, vertical = TroskoDimens.SpaceM),
-            style = TroskoTheme.typography.label.copy(textAlign = TextAlign.Center),
-            color = if (enabled) TroskoTheme.colors.onSticker else TroskoTheme.colors.inkSoft,
+            style =
+                TroskoTheme.typography.label.copy(
+                    color = if (enabled) TroskoTheme.colors.onSticker else TroskoTheme.colors.inkSoft,
+                    textAlign = TextAlign.Center,
+                ),
+            maxLines = 1,
+            softWrap = false,
+            autoSize =
+                TextAutoSize.StepBased(
+                    minFontSize = smallestFittingSize(),
+                    maxFontSize = TroskoTheme.typography.label.fontSize,
+                ),
         )
     }
 }

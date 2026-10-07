@@ -53,7 +53,7 @@ fun CategoryChip(
                 softWrap = false,
                 autoSize =
                     TextAutoSize.StepBased(
-                        minFontSize = TroskoTheme.typography.caption.fontSize,
+                        minFontSize = smallestFittingSize(),
                         maxFontSize = TroskoTheme.typography.label.fontSize,
                     ),
             )

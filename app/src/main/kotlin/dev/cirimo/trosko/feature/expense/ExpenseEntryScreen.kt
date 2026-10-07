@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -80,8 +79,8 @@ private const val CHIP_COLUMNS = 3
 private const val CHIP_COLUMNS_LARGE_TEXT = 2
 private const val LARGE_TEXT_SCALE = 1.3f
 
-// The page above the pad never shrinks below a heading and one record.
-private const val MIN_PAGE_ROWS = 3
+// The page above the pad never shrinks below a heading and one record, enlarged text included.
+private const val MIN_PAGE_ROWS = 5
 
 /**
  * Recording an expense. The upper part is the notebook page, where what was written lands; the
@@ -194,6 +193,7 @@ private fun PageAbovePad(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun LatestRecords(
     latest: List<RecordLine>,
@@ -207,9 +207,10 @@ private fun LatestRecords(
         modifier = modifier.padding(top = TroskoDimens.SpaceL),
         verticalArrangement = Arrangement.spacedBy(TroskoDimens.SpaceS),
     ) {
-        Row(
+        // The confirmation sits beside the heading, and under it when enlarged text needs the room.
+        FlowRow(
             horizontalArrangement = Arrangement.spacedBy(TroskoDimens.SpaceM),
-            verticalAlignment = Alignment.CenterVertically,
+            itemVerticalAlignment = Alignment.CenterVertically,
         ) {
             TroskoText(text = stringResource(R.string.home_latest_heading), style = TroskoTheme.typography.heading)
             // The landing says nothing to someone who cannot see it, so the words are announced.

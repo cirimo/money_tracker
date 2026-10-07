@@ -11,10 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import dev.cirimo.trosko.designsystem.theme.TroskoDimens
 import dev.cirimo.trosko.designsystem.theme.TroskoTheme
+
+private const val LARGE_TEXT_SCALE = 1.3f
 
 /**
  * One record on the page: the category's icon on its colour, the category and a second line
@@ -33,6 +36,10 @@ fun RecordRow(
     fill: Color,
     modifier: Modifier = Modifier,
 ) {
+    // With enlarged text the amount no longer fits beside the name without breaking a word, so
+    // it moves to a line of its own under it.
+    val isTextLarge = LocalDensity.current.fontScale > LARGE_TEXT_SCALE
+
     StickerSurface(
         fill = TroskoTheme.colors.card,
         modifier = modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
@@ -55,8 +62,9 @@ fun RecordRow(
             Column(modifier = Modifier.weight(1f)) {
                 TroskoText(text = title, style = TroskoTheme.typography.label)
                 TroskoText(text = subtitle, style = TroskoTheme.typography.caption, color = TroskoTheme.colors.inkSoft)
+                if (isTextLarge) TroskoText(text = amount, style = TroskoTheme.typography.label)
             }
-            TroskoText(text = amount, style = TroskoTheme.typography.label)
+            if (!isTextLarge) TroskoText(text = amount, style = TroskoTheme.typography.label)
         }
     }
 }
