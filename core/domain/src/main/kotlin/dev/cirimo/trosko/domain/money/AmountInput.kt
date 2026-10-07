@@ -60,5 +60,25 @@ data class AmountInput(
         /** Seven digits before the separator: up to 9 999 999,99. More is a typing slip. */
         const val MAX_WHOLE_DIGITS = 7
         private const val MAX_DIGIT = 9
+        private const val DECIMAL_BASE = 10L
+
+        /**
+         * The keys that would have typed [money], for correcting an amount already written down.
+         * A round amount comes back without decimals, as someone would type it; any other comes
+         * back with all of them, so 12,50 is not shown as 12,5.
+         */
+        fun of(money: Money): AmountInput {
+            require(!money.isNegative) { "An amount on the keypad is never negative" }
+            val fractionDigits = money.currency.defaultFractionDigits.coerceAtLeast(0)
+            var unitsPerWhole = 1L
+            repeat(fractionDigits) { unitsPerWhole *= DECIMAL_BASE }
+            val whole = money.minorUnits / unitsPerWhole
+            val fraction = money.minorUnits % unitsPerWhole
+            return AmountInput(
+                currency = money.currency,
+                whole = if (whole == 0L) "" else whole.toString(),
+                fraction = if (fraction == 0L) null else fraction.toString().padStart(fractionDigits, '0'),
+            )
+        }
     }
 }

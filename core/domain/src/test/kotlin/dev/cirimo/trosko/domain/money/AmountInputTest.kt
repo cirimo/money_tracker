@@ -93,6 +93,42 @@ class AmountInputTest {
     }
 
     @Test
+    fun `an amount written down comes back as the keys that typed it`() {
+        assertEquals(empty.digits("12").separator().digits("50"), AmountInput.of(Money(1_250, euro)))
+        assertEquals(empty.digits("12").separator().digits("05"), AmountInput.of(Money(1_205, euro)))
+        assertEquals(empty.separator().digits("05"), AmountInput.of(Money(5, euro)))
+    }
+
+    @Test
+    fun `a round amount comes back without decimals`() {
+        assertEquals(empty.digits("12"), AmountInput.of(Money(1_200, euro)))
+    }
+
+    @Test
+    fun `zero comes back as nothing typed`() {
+        assertTrue(AmountInput.of(Money.zero(euro)).isEmpty)
+    }
+
+    @Test
+    fun `the largest amount comes back worth the same`() {
+        val largest = Money(Long.MAX_VALUE, euro)
+
+        assertEquals(largest, AmountInput.of(largest).toMoney())
+    }
+
+    @Test
+    fun `an amount in a currency without decimals comes back whole`() {
+        val yen = Currency.getInstance("JPY")
+
+        assertEquals(AmountInput(yen, whole = "120"), AmountInput.of(Money(120, yen)))
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `a negative amount has no keys`() {
+        AmountInput.of(Money(-1, euro))
+    }
+
+    @Test
     fun `a currency without decimals has no separator`() {
         val yen = AmountInput(Currency.getInstance("JPY")).digits("120")
 

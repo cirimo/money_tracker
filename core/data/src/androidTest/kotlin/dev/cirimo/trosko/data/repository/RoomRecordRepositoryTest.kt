@@ -6,13 +6,17 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.cirimo.trosko.data.db.BuiltinCategorySeed
+import dev.cirimo.trosko.data.db.RecordEntity
 import dev.cirimo.trosko.data.db.TroskoDatabase
 import dev.cirimo.trosko.domain.model.BuiltinCategories
 import dev.cirimo.trosko.domain.model.CategoryId
 import dev.cirimo.trosko.domain.model.NewRecord
 import dev.cirimo.trosko.domain.model.NewRecordResult
+import dev.cirimo.trosko.domain.model.RecordId
 import dev.cirimo.trosko.domain.model.RecordKind
 import dev.cirimo.trosko.domain.money.Money
+import dev.cirimo.trosko.domain.repository.DeleteResult
+import dev.cirimo.trosko.domain.repository.ReplaceResult
 import dev.cirimo.trosko.domain.repository.SaveResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -145,6 +149,91 @@ class RoomRecordRepositoryTest {
 
             assertEquals(100L, latest.single().amount.minorUnits)
         }
+
+    @Test
+    fun correctedRecordSaysTheNewThingsAndKeepsItsIdAndPlace() =
+        runBlocking {
+            val saved = repository.add(expense(1_250, groceries.id, today, "bread")) as SaveResult.Saved
+            repository.add(expense(300, groceries.id))
+            val before = storedRow(saved.id)
+
+            val result = repository.replace(saved.id, expense(1_520, transport.id, today.minusDays(3), "tram"))
+
+            val after = storedRow(saved.id)
+            val record = repository.observe(saved.id).first()
+            assertEquals(ReplaceResult.Replaced, result)
+            assertEquals(Money(1_520, euro), record?.amount)
+            assertEquals(transport.id, record?.category?.id)
+            assertEquals(today.minusDays(3), record?.occurredOn)
+            assertEquals("tram", record?.note)
+            assertEquals(before.createdAt, after.createdAt)
+            assertTrue(after.updatedAt > before.updatedAt)
+            // It was written first, so it is still second among the latest.
+            assertEquals(saved.id, repository.observeLatest(limit = 10).first()[1].id)
+        }
+
+    @Test
+    fun correctionFiledUnderAMissingCategoryIsRefusedAndChangesNothing() =
+        runBlocking {
+            val saved = repository.add(expense(1_250, groceries.id, today, "bread")) as SaveResult.Saved
+            val before = storedRow(saved.id)
+
+            val result = repository.replace(saved.id, expense(999, CategoryId(UUID.randomUUID())))
+
+            assertEquals(ReplaceResult.NotSaved, result)
+            assertEquals(before, storedRow(saved.id))
+        }
+
+    @Test
+    fun correctingARecordThatIsNotThereSaysItIsGoneAndWritesNothing() =
+        runBlocking {
+            val result = repository.replace(RecordId(UUID.randomUUID()), expense(100, groceries.id))
+
+            assertEquals(ReplaceResult.Gone, result)
+            assertTrue(repository.observeLatest(limit = 10).first().isEmpty())
+        }
+
+    @Test
+    fun deletedRecordIsReallyGoneAndTheOthersStay() =
+        runBlocking {
+            val doomed = repository.add(expense(100, groceries.id)) as SaveResult.Saved
+            val kept = repository.add(expense(200, transport.id)) as SaveResult.Saved
+
+            val result = repository.delete(doomed.id)
+
+            assertEquals(DeleteResult.Deleted, result)
+            assertNull(repository.observe(doomed.id).first())
+            assertEquals(listOf(kept.id.value.toString()), allRows().map { it.id })
+        }
+
+    @Test
+    fun deletingARecordThatIsNotThereSaysItIsGone() =
+        runBlocking {
+            repository.add(expense(100, groceries.id))
+
+            val result = repository.delete(RecordId(UUID.randomUUID()))
+
+            assertEquals(DeleteResult.Gone, result)
+            assertEquals(1, allRows().size)
+        }
+
+    @Test
+    fun deleteFinishesEvenWhenTheCallerIsCancelledFirst() =
+        runBlocking {
+            val saved = repository.add(expense(100, groceries.id)) as SaveResult.Saved
+            val callerScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+            callerScope.launch(start = CoroutineStart.UNDISPATCHED) { repository.delete(saved.id) }
+            callerScope.cancel()
+
+            val latest = withTimeout(TIMEOUT_MILLIS) { repository.observeLatest(limit = 10).first { it.isEmpty() } }
+
+            assertTrue(latest.isEmpty())
+        }
+
+    // Every row as the table holds it, timestamps included, which the domain does not show.
+    private suspend fun allRows(): List<RecordEntity> = database.recordDao().observeInRange("0000", "9999").first()
+
+    private suspend fun storedRow(id: RecordId): RecordEntity = allRows().single { it.id == id.value.toString() }
 
     private fun expense(
         minorUnits: Long,
