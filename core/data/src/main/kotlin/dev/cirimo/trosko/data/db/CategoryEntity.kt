@@ -24,6 +24,10 @@ internal data class CategoryEntity(
     @ColumnInfo(name = "builtin_key") val builtinKey: String?,
     /** Set once the user has typed a name; takes precedence over [builtinKey]. */
     @ColumnInfo(name = "custom_name") val customName: String?,
+    /** One of the constants in `CategoryColourColumn.kt`. */
+    val colour: String,
+    /** One of the constants in `CategoryIconColumn.kt`. */
+    val icon: String,
     @ColumnInfo(name = "sort_order") val sortOrder: Int,
     /** Milliseconds since the epoch, UTC; null while the category is in use. */
     @ColumnInfo(name = "archived_at") val archivedAt: Long?,

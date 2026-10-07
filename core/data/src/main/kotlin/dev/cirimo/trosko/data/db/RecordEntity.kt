@@ -27,6 +27,7 @@ import androidx.room3.PrimaryKey
     indices = [
         Index(value = ["category_id", "kind"]),
         Index(value = ["occurred_on"]),
+        Index(value = ["created_at"]),
     ],
 )
 internal data class RecordEntity(

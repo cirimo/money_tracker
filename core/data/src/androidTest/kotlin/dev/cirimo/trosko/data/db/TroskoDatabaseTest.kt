@@ -98,6 +98,8 @@ class TroskoDatabaseTest {
         kind = kind,
         builtinKey = null,
         customName = id,
+        colour = "GREEN",
+        icon = "BASKET",
         sortOrder = sortOrder,
         archivedAt = archivedAt,
         createdAt = 0L,

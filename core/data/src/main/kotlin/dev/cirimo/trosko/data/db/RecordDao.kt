@@ -3,6 +3,7 @@ package dev.cirimo.trosko.data.db
 import androidx.room3.Dao
 import androidx.room3.Insert
 import androidx.room3.Query
+import androidx.room3.Transaction
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -19,4 +20,12 @@ internal interface RecordDao {
         fromInclusive: String,
         toExclusive: String,
     ): Flow<List<RecordEntity>>
+
+    /**
+     * The [limit] records written most recently, newest first, whatever their dates. The row id
+     * breaks a tie between two records written in the same millisecond.
+     */
+    @Transaction
+    @Query("SELECT * FROM record ORDER BY created_at DESC, rowid DESC LIMIT :limit")
+    fun observeLatest(limit: Int): Flow<List<RecordWithCategory>>
 }

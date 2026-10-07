@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "6600fd673a84588d85455bda61e2c720",
+    "identityHash": "2cdbb9fa0f75a70b85357afca9ceb823",
     "entities": [
       {
         "tableName": "category",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `kind` TEXT NOT NULL, `builtin_key` TEXT, `custom_name` TEXT, `sort_order` INTEGER NOT NULL, `archived_at` INTEGER, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `kind` TEXT NOT NULL, `builtin_key` TEXT, `custom_name` TEXT, `colour` TEXT NOT NULL, `icon` TEXT NOT NULL, `sort_order` INTEGER NOT NULL, `archived_at` INTEGER, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -29,6 +29,18 @@
             "fieldPath": "customName",
             "columnName": "custom_name",
             "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "colour",
+            "columnName": "colour",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "icon",
+            "columnName": "icon",
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "sortOrder",
@@ -156,6 +168,15 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_record_occurred_on` ON `${TABLE_NAME}` (`occurred_on`)"
+          },
+          {
+            "name": "index_record_created_at",
+            "unique": false,
+            "columnNames": [
+              "created_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_record_created_at` ON `${TABLE_NAME}` (`created_at`)"
           }
         ],
         "foreignKeys": [
@@ -177,7 +198,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6600fd673a84588d85455bda61e2c720')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2cdbb9fa0f75a70b85357afca9ceb823')"
     ]
   }
 }

@@ -34,6 +34,13 @@ android {
         localeFilters += listOf("en", "hr")
     }
 
+    // Hand-written fakes of the repository interfaces, used by the JVM tests and by the
+    // instrumented tests alike, so there is one copy of each.
+    sourceSets {
+        getByName("test").kotlin.directories += "src/sharedTest/kotlin"
+        getByName("androidTest").kotlin.directories += "src/sharedTest/kotlin"
+    }
+
     signingConfigs {
         if (keystorePropertiesFile.exists()) {
             create("release") {

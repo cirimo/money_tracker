@@ -1,4 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="placeholder_message">Troško je živ. Prava aplikacija počinje ovdje.</string>
+    <!-- Home -->
+    <string name="home_latest_heading">Zadnje zapisano</string>
+    <string name="home_empty_message">Još ništa. Prvi zapis?</string>
+    <string name="home_new_expense_button">Novi trošak</string>
+
+    <!-- Recording an expense -->
+    <string name="expense_entry_save_button">Zapiši</string>
+    <string name="expense_entry_saved_message">Zapisano.</string>
+    <string name="expense_entry_save_failed_message">Nije se zapisalo. Ništa nije izgubljeno, probaj opet.</string>
+    <string name="expense_entry_note_placeholder">bilješka</string>
+    <string name="expense_entry_amount_description">Iznos: %1$s</string>
+    <string name="expense_entry_date_description">Datum: %1$s</string>
+    <string name="expense_entry_separator_description">Decimalni zarez</string>
+    <string name="expense_entry_backspace_description">Obriši znamenku</string>
+    <string name="expense_entry_day_back_description">Dan ranije</string>
+    <string name="expense_entry_day_forward_description">Dan kasnije</string>
+
+    <!-- Days -->
+    <string name="day_today">Danas</string>
+    <string name="day_yesterday">Jučer</string>
+    <!-- A java.time pattern for a short date with its weekday, as this language writes it. -->
+    <string name="day_pattern">EEE d. M.</string>
+
+    <!-- Built-in categories. Keep the names short: each has to fit on a small sticker. -->
+    <string name="category_groceries">Namirnice</string>
+    <string name="category_eating_out">Vani</string>
+    <string name="category_transport">Prijevoz</string>
+    <string name="category_home">Stan</string>
+    <string name="category_bills">Režije</string>
+    <string name="category_health">Zdravlje</string>
+    <string name="category_fun">Zabava</string>
+    <string name="category_shopping">Kupovina</string>
+    <string name="category_other">Ostalo</string>
 </resources>

@@ -1,5 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Troško</string>
-    <string name="placeholder_message">Troško is alive. The real app starts here.</string>
+
+    <!-- Home -->
+    <string name="home_latest_heading">Latest entries</string>
+    <string name="home_empty_message">Nothing yet. First entry?</string>
+    <string name="home_new_expense_button">New expense</string>
+
+    <!-- Recording an expense -->
+    <string name="expense_entry_save_button">Note it</string>
+    <string name="expense_entry_saved_message">Noted.</string>
+    <string name="expense_entry_save_failed_message">That didn\'t save. Nothing was lost, try again.</string>
+    <string name="expense_entry_note_placeholder">note</string>
+    <string name="expense_entry_amount_description">Amount: %1$s</string>
+    <string name="expense_entry_date_description">Date: %1$s</string>
+    <string name="expense_entry_separator_description">Decimal separator</string>
+    <string name="expense_entry_backspace_description">Delete digit</string>
+    <string name="expense_entry_day_back_description">One day earlier</string>
+    <string name="expense_entry_day_forward_description">One day later</string>
+
+    <!-- A record in a list. The pattern joins the day and the note; it has no words. -->
+    <string name="record_row_day_and_note" translatable="false">%1$s · %2$s</string>
+
+    <!-- Days -->
+    <string name="day_today">Today</string>
+    <string name="day_yesterday">Yesterday</string>
+    <!-- A java.time pattern for a short date with its weekday, as this language writes it. -->
+    <string name="day_pattern">EEE, MMM d</string>
+
+    <!-- Built-in categories. Keep the names short: each has to fit on a small sticker. -->
+    <string name="category_groceries">Groceries</string>
+    <string name="category_eating_out">Eating out</string>
+    <string name="category_transport">Transport</string>
+    <string name="category_home">Home</string>
+    <string name="category_bills">Bills</string>
+    <string name="category_health">Health</string>
+    <string name="category_fun">Fun</string>
+    <string name="category_shopping">Shopping</string>
+    <string name="category_other">Other</string>
 </resources>

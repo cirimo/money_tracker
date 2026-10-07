@@ -39,6 +39,7 @@ internal fun openTroskoDatabase(
         Room
             .databaseBuilder<TroskoDatabase>(context.applicationContext, DATABASE_FILE_NAME)
             .setDriver(BundledSQLiteDriver())
+            .addCallback(BuiltinCategorySeed())
     if (allowDestructiveMigration) {
         builder.fallbackToDestructiveMigration(dropAllTables = true)
     }
