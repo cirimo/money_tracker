@@ -55,3 +55,4 @@ index below.
 | [0030](0030-home-page-and-own-keypad.md) | A home page first; entry is its own screen with the app's own keypad | accepted |
 | [0031](0031-built-in-categories.md) | Nine built-in expense categories with fixed ids | accepted |
 | [0032](0032-baseline-profile-in-its-own-session.md) | The baseline profile gets a session of its own | accepted |
+| [0033](0033-correcting-and-deleting-a-record.md) | Correcting and deleting a record | accepted |

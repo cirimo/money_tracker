@@ -56,7 +56,8 @@ else. The plugins are `trosko.android.application`, `trosko.android.library`,
 :app                 dev.cirimo.trosko
   (root)             TroskoApplication, AppContainer, MainActivity
   navigation/        TroskoNavDisplay: the back stack and the key-to-route mapping
-  feature/<name>/    XKey, XRoute, XScreen, XViewModel, XUiState, and the feature's own pieces
+  feature/<name>/    XKey, XRoute, XScreen, XViewModel, XUiState, and the feature's own pieces;
+                     a feature may hold more than one screen (expense: entry and correction)
   format/            turning Money, dates, categories and records into the words, colours
                      and rows the current language and theme call for; it is also where
                      what two features both show (a record as a row) lives, because
@@ -122,6 +123,9 @@ Navigation 3, in a single activity. The back stack is a list of keys that the ap
   loads what it needs from a repository, so it is correct after process death too.
 - Every entry gets its own view model store, cleared when the entry leaves the back stack.
 - A result from one screen to another uses Navigation 3's result API, not a shared view model.
+  The sending route calls `sendResult` on `LocalResultEventBus`, the receiving route collects it
+  with `ResultEffect` and hands it to its view model, which keeps it as state. The value sent
+  lives in `format/` when two features must both know it, as `RecordChange` does.
 - There are no deep links, and the manifest has no intent filter besides the launcher. When a
   widget or shortcut needs one, the activity turns the intent into a back stack by hand.
 
@@ -186,6 +190,9 @@ category                            record
 - **A category with records is archived, never deleted.** It stops being offered for new
   records and old ones keep it. A category with no records is really deleted. Records are really
   deleted.
+- **Correcting a record** rewrites its amount, category, date and note and stamps `updated_at`.
+  Its id, kind and `created_at` never change
+  ([decision 0033](decisions/0033-correcting-and-deleting-a-record.md)).
 - **Enumerations are stored as text through an explicit mapping** (`RecordKindColumn.kt`), never
   by the enum's name, so renaming a constant in Kotlin cannot change what is in users' databases.
 - **Timestamps** (`created_at`, `updated_at`, `archived_at`) are milliseconds since the epoch in
@@ -388,5 +395,7 @@ the code.
   composition local.
 - **Fonts are bundled**, because the app has no network access.
 - **Navigation starts on a home page**, and recording an expense is a screen of its own reached
-  from it ([decision 0030](decisions/0030-home-page-and-own-keypad.md)). Which further screens
+  from it ([decision 0030](decisions/0030-home-page-and-own-keypad.md)). Pressing a record on
+  either opens the screen that corrects or deletes it
+  ([decision 0033](decisions/0033-correcting-and-deleting-a-record.md)). Which further screens
   exist is decided feature by feature. The transition between screens is a page turn.

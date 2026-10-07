@@ -106,9 +106,10 @@ composable; do not draw outlines and shadows by hand elsewhere.
   offset is also how far a press travels.
 - A disabled control has a dashed outline, no shadow and paper fill. It does not rely on a faded
   colour.
-- **Tilt.** A sticker may sit a few degrees off level: the large amount on the entry screen and
-  the one record that has just landed. That record stays tilted until the next one lands, then
-  straightens. Every other row of a list, and all running text, stay level.
+- **Tilt.** A sticker may sit a few degrees off level: the large amount on the entry screen,
+  the one record that has just landed, and the record lying on the correction screen. A landed
+  record stays tilted until the next one lands, then straightens. Every other row of a list,
+  and all running text, stay level.
 - **A second outline** just outside a shape says one of two things: solid, this is the chosen
   one of a group; dashed, this has keyboard focus.
 
@@ -194,6 +195,10 @@ Principles:
 Now and then, not every time, Troško shows his delighted face beside the landing sticker. How
 often is to be tuned on a real device; it must stay a small surprise.
 
+A corrected record gets the same answer in its own place: back on the list it lands again where
+it was, and the heading says so in a word. A deleted record just leaves, and the rows under it
+move up on `settle`.
+
 ### Screen transitions
 
 Moving between screens turns the page: the new screen comes in from the side with a slight
@@ -254,10 +259,11 @@ draws its own outline, shadow or text colour.
 | `StickerSurface` | resting, pressed (via `lift`), dashed | The raised shape. Everything else is built on it. |
 | `TroskoText` | | Text in the theme's ink. Use it instead of `BasicText`. |
 | `TroskoButton` | default, pressed, disabled, focused | Yellow fill. One per screen. |
-| `QuietButton`, `QuietIconButton` | default, pressed, disabled, focused | The same on `card`, for secondary actions and for the keys of the keypad. The icon one requires a content description. |
+| `QuietButton`, `QuietIconButton` | default, pressed, disabled, focused | The same on `card`, for secondary actions and for the keys of the keypad. The first may carry an icon before its word; the icon one requires a content description. |
 | `CategoryChip` | default, selected, focused | Sticker colour, icon and name. Selected is flat with a second outline. |
 | `TroskoTextField` | empty, focused, filled | An ink line under the text, no box: dashed at rest, solid with focus. The error state is not built. |
-| `RecordRow` | default | `card` fill; the icon on its colour, category and date on one side, amount on the other. With enlarged text the amount moves under the name. The pressed state is not built; nothing opens a record yet. |
+| `RecordRow` | default, pressed, focused | `card` fill; the icon on its colour, category and date on one side, amount on the other. With enlarged text the amount moves under the name. Given a click it is pressed like a button and opens the record. |
+| `DayCell` | default, selected, focused, unavailable | One day on a calendar page: a small `card` sticker with its number. Selected is flat with a second outline; today is underlined; a day that cannot be chosen is only its number in soft ink. |
 | `AmountDisplay` | | The large tilted amount on the entry screen. It takes the colour of the chosen category, and `card` while none is chosen. |
 | `InkIcon` | | One icon from `InkGlyph`, drawn as a single stroke. |
 | `LandingSticker` | landing, at rest | The landing of something just saved; see the signature interaction. |
@@ -272,8 +278,13 @@ A component is finished when it has a preview in both themes, honours reduced mo
 correct semantics for TalkBack (role, state, label), is at least `MinTouchTarget` and shows
 keyboard focus. Keyboard focus is shown as a second, dashed ink outline outside the shape.
 
-The amount keypad and the date stepper are not components of the design system. They are
-arrangements of these components that belong to recording an expense, and live in that feature.
+The amount keypad, the date stepper and the calendar page are not components of the design
+system. They are arrangements of these components that belong to writing an expense, and live
+in that feature.
+
+A question that must be answered before something is lost, such as deleting a record, is asked
+in place: the words and two quiet buttons take the place of what was pressed. There is no
+dialog and nothing dims the page.
 
 ## Accessibility beyond the baseline
 
