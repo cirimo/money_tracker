@@ -7,10 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
@@ -29,6 +31,7 @@ private const val DASH_OFF_DP = 6f
  * flat: no shadow, and the shape has moved to where the shadow was). It is a lambda so that an
  * animated value is read while drawing and never causes recomposition.
  * @param dashed draws the outline dashed, which is how a disabled control looks.
+ * @param secondOutline draws another outline just outside the shape; see [SecondOutline].
  */
 @Composable
 fun StickerSurface(
@@ -37,6 +40,8 @@ fun StickerSurface(
     shape: Shape = TroskoTheme.shapes.sticker,
     lift: () -> Float = { 1f },
     dashed: Boolean = false,
+    secondOutline: SecondOutline? = null,
+    contentAlignment: Alignment = Alignment.Center,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val ink = TroskoTheme.colors.ink
@@ -54,24 +59,38 @@ fun StickerSurface(
                 }.drawWithContent {
                     val outline = shape.createOutline(size, layoutDirection, this)
                     val offset = TroskoDimens.ShadowOffset.toPx() * lift()
-                    val dashes =
-                        if (dashed) {
-                            PathEffect.dashPathEffect(floatArrayOf(DASH_ON_DP * density, DASH_OFF_DP * density))
-                        } else {
-                            null
-                        }
                     translate(left = offset, top = offset) { drawOutline(outline, shadow) }
                     drawOutline(outline, fill)
                     drawContent()
                     drawOutline(
                         outline = outline,
                         color = ink,
-                        style = Stroke(width = TroskoDimens.Outline.toPx(), pathEffect = dashes),
+                        style = Stroke(width = TroskoDimens.Outline.toPx(), pathEffect = dashes(dashed)),
                     )
+                    if (secondOutline != null) {
+                        drawSecondOutline(shape, ink, dashes(secondOutline == SecondOutline.Dashed))
+                    }
                 },
-        contentAlignment = Alignment.Center,
+        contentAlignment = contentAlignment,
         content = content,
     )
+}
+
+private fun ContentDrawScope.dashes(dashed: Boolean): PathEffect? =
+    if (dashed) PathEffect.dashPathEffect(floatArrayOf(DASH_ON_DP * density, DASH_OFF_DP * density)) else null
+
+private fun ContentDrawScope.drawSecondOutline(
+    shape: Shape,
+    ink: Color,
+    dashes: PathEffect?,
+) {
+    val stroke = TroskoDimens.Outline.toPx()
+    // From the centre of the first outline to the centre of the second.
+    val grow = stroke + TroskoDimens.SecondOutlineGap.toPx()
+    val outer = shape.createOutline(Size(size.width + 2 * grow, size.height + 2 * grow), layoutDirection, this)
+    translate(left = -grow, top = -grow) {
+        drawOutline(outline = outer, color = ink, style = Stroke(width = stroke, pathEffect = dashes))
+    }
 }
 
 @Preview(showBackground = true)

@@ -1,0 +1,72 @@
+package dev.cirimo.trosko.designsystem.component
+
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
+import dev.cirimo.trosko.designsystem.theme.TroskoDimens
+import dev.cirimo.trosko.designsystem.theme.TroskoTheme
+
+/**
+ * One record on the page: the category's icon on its colour, the category and a second line
+ * (the date, a note) on one side, and the amount on the other. A screen reader hears the whole
+ * row as one sentence.
+ *
+ * @param amount already formatted for the locale, sign included.
+ * @param fill the category's sticker colour, used for the icon's badge.
+ */
+@Composable
+fun RecordRow(
+    title: String,
+    subtitle: String,
+    amount: String,
+    glyph: InkGlyph,
+    fill: Color,
+    modifier: Modifier = Modifier,
+) {
+    StickerSurface(
+        fill = TroskoTheme.colors.card,
+        modifier = modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
+        contentAlignment = Alignment.CenterStart,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = TroskoDimens.SpaceM, vertical = TroskoDimens.SpaceS),
+            horizontalArrangement = Arrangement.spacedBy(TroskoDimens.SpaceM),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            // The shadow padding of the badge is given back, so the badge itself is BadgeSize.
+            StickerSurface(
+                fill = fill,
+                modifier = Modifier.size(TroskoDimens.BadgeSize + TroskoDimens.ShadowOffset),
+                shape = TroskoTheme.shapes.chip,
+                lift = { 0f },
+            ) {
+                InkIcon(glyph = glyph, contentDescription = null, tint = TroskoTheme.colors.onSticker)
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                TroskoText(text = title, style = TroskoTheme.typography.label)
+                TroskoText(text = subtitle, style = TroskoTheme.typography.caption, color = TroskoTheme.colors.inkSoft)
+            }
+            TroskoText(text = amount, style = TroskoTheme.typography.label)
+        }
+    }
+}
+
+@Preview(name = "light")
+@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun RecordRowPreview() {
+    ThemePreview {
+        RecordRow("Namirnice", "Danas · kruh i mlijeko", "−12,50 €", InkGlyph.Basket, TroskoTheme.colors.green)
+        RecordRow("Režije", "pon 5. 10.", "−61,37 €", InkGlyph.Bolt, TroskoTheme.colors.yellow)
+    }
+}

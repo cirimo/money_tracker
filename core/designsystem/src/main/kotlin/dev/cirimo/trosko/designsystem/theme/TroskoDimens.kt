@@ -29,6 +29,18 @@ object TroskoDimens {
     /** The height of a main button. */
     val ButtonHeight = 52.dp
 
+    /** The height of one key on the amount keypad. */
+    val KeyHeight = 54.dp
+
+    /** The box an icon is drawn in. Icons are designed on a grid of 24 units. */
+    val IconSize = 24.dp
+
+    /** The small coloured sticker that carries a category's icon in a record row. */
+    val BadgeSize = 40.dp
+
+    /** The space between a shape and its second outline (selected, or keyboard focus). */
+    val SecondOutlineGap = 2.dp
+
     /** Content never grows wider than this, on tablets, foldables and in landscape. */
     val MaxContentWidth = 480.dp
 }
