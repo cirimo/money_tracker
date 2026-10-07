@@ -1,0 +1,26 @@
+# Store text as LF in the repository and check it out as LF on every platform.
+# This overrides each contributor's core.autocrlf, so Windows and CI see identical files.
+* text=auto eol=lf
+
+# Windows scripts only run with CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# The POSIX wrapper script breaks if it ever gets CRLF.
+gradlew text eol=lf
+
+# Binary files, never touched by line ending conversion or textual diffs.
+*.jar binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.ogg binary
+*.mp3 binary
+*.wav binary
+*.jks binary
+*.keystore binary
