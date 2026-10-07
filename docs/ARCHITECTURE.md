@@ -57,7 +57,10 @@ else. The plugins are `trosko.android.application`, `trosko.android.library`,
   (root)             TroskoApplication, AppContainer, MainActivity
   navigation/        TroskoNavDisplay: the back stack and the key-to-route mapping
   feature/<name>/    XKey, XRoute, XScreen, XViewModel, XUiState, and the feature's own pieces
-  format/            turning Money and dates into text for the current locale
+  format/            turning Money, dates, categories and records into the words, colours
+                     and rows the current language and theme call for; it is also where
+                     what two features both show (a record as a row) lives, because
+                     features may not use each other
 
 :core:domain         dev.cirimo.trosko.domain
   money/             Money and everything that computes with it
@@ -160,13 +163,13 @@ category                            record
   kind          TEXT                  kind          TEXT     EXPENSE | INCOME
   builtin_key   TEXT NULL             amount_minor  INTEGER  always positive
   custom_name   TEXT NULL             currency      TEXT     ISO 4217
-  sort_order    INTEGER               category_id   TEXT
-  archived_at   INTEGER NULL          occurred_on   TEXT     ISO 8601 date
-  created_at    INTEGER               note          TEXT NULL
-  updated_at    INTEGER               created_at    INTEGER
-  UNIQUE (id, kind)                   updated_at    INTEGER
-                                      FOREIGN KEY (category_id, kind)
-                                        REFERENCES category (id, kind)  RESTRICT
+  colour        TEXT                  category_id   TEXT
+  icon          TEXT                  occurred_on   TEXT     ISO 8601 date
+  sort_order    INTEGER               note          TEXT NULL
+  archived_at   INTEGER NULL          created_at    INTEGER
+  created_at    INTEGER               updated_at    INTEGER
+  updated_at    INTEGER               FOREIGN KEY (category_id, kind)
+  UNIQUE (id, kind)                     REFERENCES category (id, kind)  RESTRICT
 ```
 
 - **Identifiers are UUIDs** generated on the device and stored as text. They survive export,
@@ -174,7 +177,9 @@ category                            record
   have fixed UUIDs so that two devices agree on them.
 - **The foreign key covers the kind as well as the id**, so the database itself refuses an
   expense filed under an income source.
-- **The amount is always positive**; the sign follows from the kind.
+- **The amount is always positive**; the sign follows from the kind. Room cannot declare a
+  `CHECK` constraint, so this is enforced by the domain (`NewRecord` cannot be made with any
+  other amount), not by the database.
 - **A category that ships with the app has no stored name.** `builtin_key` selects a string
   resource, so the name follows the app language. Once the user renames it, `custom_name` holds
   what they typed and wins.
@@ -187,8 +192,14 @@ category                            record
   UTC. `created_at` also orders records within one day.
 
 A category's look is one of the six sticker colours and one icon
-([DESIGN.md](DESIGN.md#colour)). The two columns for them, each a text key mapped explicitly
-like `kind`, are not in the schema yet and are added before version 1 is frozen.
+([DESIGN.md](DESIGN.md#colour)), each stored as a text key mapped explicitly like `kind`. The
+domain holds them as names (`CategoryColour`, `CategoryIcon`); `:app` turns a name into a
+colour of the theme and a drawing of the design system.
+
+The categories that ship with the app are listed in `BuiltinCategories` in the domain and
+written into the database as part of creating it. Their timestamps are zero, so that when a
+restore compares `updated_at`, anything the user has changed wins over the seed
+([decision 0031](decisions/0031-built-in-categories.md)).
 
 ### Room for what comes later
 
@@ -218,7 +229,10 @@ The API is `java.time`; minimum SDK 26 has it natively.
   day. "This month" is the calendar month that contains today in the device's time zone. Month
   over month is a sequence of such periods.
 - Code never asks the system for the current time directly. A `java.time.Clock` is passed in,
-  so tests can fix the date.
+  so tests can fix the date. The app has one, `DeviceClock`, created in `AppContainer`; it
+  reads the time zone on every call, so "today" stays right when the phone travels.
+- A form that means "today" holds no date at all until it is saved, so one left open over
+  midnight is filed under the day it was saved on.
 - A month that starts on payday, if it is ever wanted, is a setting that changes how periods are
   computed. It needs no migration.
 
@@ -256,7 +270,8 @@ Users' financial history has to survive every update for years, so:
 - Repositories expose `Flow` for reading and `suspend` functions for writing. View models turn
   flows into state with `stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), initial)`.
 - Saving a record must not be cancelled because the user left the screen: the write runs in an
-  application-wide scope owned by the repository layer, and the view model only awaits it.
+  application-wide scope, created in `AppContainer` and handed to `Repositories`, and the view
+  model only awaits it.
 - Dispatchers are never named at the call site. Room moves queries off the main thread itself;
   anything else that needs a dispatcher receives it through its constructor, so tests can
   replace it.
@@ -324,12 +339,18 @@ This builds on [CONVENTIONS.md](CONVENTIONS.md#error-handling).
 | What | Where | Runs in `check` |
 |---|---|---|
 | Domain: money, parsing, periods, rules | JVM unit tests in `:core:domain` | yes |
-| View models | JVM unit tests in `:app` with hand-written fake repositories | yes |
+| View models, formatting | JVM unit tests in `:app` with hand-written fake repositories | yes |
 | Database: DAOs, constraints, repositories, migrations | instrumented tests in `:core:data` | compiled only |
 | Screens: the paths that matter, above all recording an expense | Compose instrumented tests in `:app` | compiled only |
+| Components whose behaviour is motion or measurement | Compose instrumented tests in `:core:designsystem` | compiled only |
 
 Database tests need a device because Room's Android artifact needs an Android runtime. Run
 `connectedDebugAndroidTest` whenever `:core:data` changes.
+
+Screen tests run a real view model on fake repositories, so they never write to the installed
+app's database. `AppLaunchTest` is the one test that opens the real database, and it only
+reads. Formatting is tested twice on purpose: on the JVM, and again on a device, because the
+two format with different locale data.
 
 Screenshot tests are not set up. They wait for the design session, so there is something worth
 pinning down; choosing the tool is part of that step.
@@ -344,8 +365,10 @@ The app animates a lot, so these hold from the first screen:
 - A value that changes on every frame is read where it is used, in a `graphicsLayer {}` or draw
   lambda, not in composition.
 - Smoothness is judged on a release build. Debug builds of Compose are slow and prove nothing.
-- A baseline profile and a macrobenchmark of the record-entry path are added with the first
-  real screen. They need the `androidx.baselineprofile` plugin, which is not yet in the build.
+- A baseline profile and a macrobenchmark of the record-entry path are not in the build yet.
+  They need a fifth module, the `androidx.baselineprofile` plugin and three libraries, so they
+  get a session of their own
+  ([decision 0032](decisions/0032-baseline-profile-in-its-own-session.md)).
 
 Static checks for Compose come from the compose-rules ktlint rule set, run through Spotless.
 
@@ -364,6 +387,6 @@ the code.
   locals and sizes and motion as plain objects. It is the only place that may define a
   composition local.
 - **Fonts are bundled**, because the app has no network access.
-- **The shape of navigation is still open.** Which screens exist and whether entry is a screen
-  or a sheet is decided with the first feature. The design fixes only the transition: a page
-  turn.
+- **Navigation starts on a home page**, and recording an expense is a screen of its own reached
+  from it ([decision 0030](decisions/0030-home-page-and-own-keypad.md)). Which further screens
+  exist is decided feature by feature. The transition between screens is a page turn.

@@ -90,6 +90,8 @@ Font License 1.1, whose texts are in `core/designsystem/licenses/`:
   symbol and separators come from the formatter, never from the layout.
 - Text scales with the system font size. A layout must survive 200 percent: rows wrap, and the
   large amount may shrink to fit its box but never below the `title` size.
+- A single word on a button or a chip is never broken across lines. When it does not fit it
+  shrinks, at most down to the `caption` size as it looks without enlargement.
 - Shantell Sans has "bounce" and "informality" axes that make letters jump. They are left at
   zero. Text that wobbles is harder to read, and numbers must stay still.
 
@@ -104,9 +106,11 @@ composable; do not draw outlines and shadows by hand elsewhere.
   offset is also how far a press travels.
 - A disabled control has a dashed outline, no shadow and paper fill. It does not rely on a faded
   colour.
-- **Tilt.** A sticker may sit a few degrees off level: the large amount on the entry screen, a
-  category chip, a record that has just landed. Rows of a list, anything containing an amount
-  the user needs to compare, and all running text stay level.
+- **Tilt.** A sticker may sit a few degrees off level: the large amount on the entry screen and
+  the one record that has just landed. That record stays tilted until the next one lands, then
+  straightens. Every other row of a list, and all running text, stay level.
+- **A second outline** just outside a shape says one of two things: solid, this is the chosen
+  one of a group; dashed, this has keyboard focus.
 
 ## Spacing and layout
 
@@ -183,6 +187,7 @@ Principles:
 1. The button goes flat the instant it is touched (`press`).
 2. The record lands at the top of the list as a sticker, dropping in slightly too large and
    tilted, and settling with one bounce (`pop`). Its final tilt is random within a few degrees.
+   The `LandingSticker` component does this.
 3. The entry form is already empty and ready. The user can type the next amount while the
    sticker is still landing.
 
@@ -195,12 +200,20 @@ Moving between screens turns the page: the new screen comes in from the side wit
 tilt that straightens as it lands (`settle`). Going back reverses it and follows the predictive
 back gesture.
 
+Built so far: the new page slides in over the old one on `settle` and back out again, with a
+cross-fade under reduced motion. The tilt is not built, and nobody has watched the transition
+follow a back gesture.
+
 ### Reduced motion
 
 `TroskoTheme.reducedMotion` is true when the user has switched animations off in the system.
 Then nothing translates, scales or rotates: a press changes state at once, a saved record and a
 new screen fade in with `reduced`, and tilts are dropped. Every animated component must handle
 this, and a component that ignores it is not finished.
+
+Two limits of how this is built. The setting is read when the activity starts, so a change
+shows after the app is reopened. And when the system's animator scale is zero, Compose itself
+finishes every animation at once, so the `reduced` fade is in practice an immediate change.
 
 ## Haptics and sound
 
@@ -240,12 +253,14 @@ draws its own outline, shadow or text colour.
 |---|---|---|
 | `StickerSurface` | resting, pressed (via `lift`), dashed | The raised shape. Everything else is built on it. |
 | `TroskoText` | | Text in the theme's ink. Use it instead of `BasicText`. |
-| `TroskoButton` | default, pressed, disabled | Yellow fill. One per screen. |
-| Quiet button | default, pressed, disabled | The same on `card`, for secondary actions. Not built. |
-| Category chip | default, selected | Sticker colour, icon and name. Selected is flat with a second outline. Not built. |
-| Text field | empty, focused, filled, error | A dashed ink line under the text, no box. Not built. |
-| Record row | default, pressed | `card` fill; icon, date and category on one side, amount on the other. Not built. |
-| Amount display | | The large tilted amount on the entry screen. Not built. |
+| `TroskoButton` | default, pressed, disabled, focused | Yellow fill. One per screen. |
+| `QuietButton`, `QuietIconButton` | default, pressed, disabled, focused | The same on `card`, for secondary actions and for the keys of the keypad. The icon one requires a content description. |
+| `CategoryChip` | default, selected, focused | Sticker colour, icon and name. Selected is flat with a second outline. |
+| `TroskoTextField` | empty, focused, filled | An ink line under the text, no box: dashed at rest, solid with focus. The error state is not built. |
+| `RecordRow` | default | `card` fill; the icon on its colour, category and date on one side, amount on the other. With enlarged text the amount moves under the name. The pressed state is not built; nothing opens a record yet. |
+| `AmountDisplay` | | The large tilted amount on the entry screen. It takes the colour of the chosen category, and `card` while none is chosen. |
+| `InkIcon` | | One icon from `InkGlyph`, drawn as a single stroke. |
+| `LandingSticker` | landing, at rest | The landing of something just saved; see the signature interaction. |
 | Bars | | The two chart kinds above. Not built. |
 | Empty state | | Troško dozing, one line of text, one button. Not built. |
 
@@ -256,6 +271,9 @@ is in the notebook (`StickerSurface`).
 A component is finished when it has a preview in both themes, honours reduced motion, has
 correct semantics for TalkBack (role, state, label), is at least `MinTouchTarget` and shows
 keyboard focus. Keyboard focus is shown as a second, dashed ink outline outside the shape.
+
+The amount keypad and the date stepper are not components of the design system. They are
+arrangements of these components that belong to recording an expense, and live in that feature.
 
 ## Accessibility beyond the baseline
 

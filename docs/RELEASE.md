@@ -47,7 +47,7 @@ hosted on GitHub. See [decision 0006](decisions/0006-no-secrets-in-git.md).
 | 64-bit and 16 KB page size support | done | We have no native code of our own, but Compose ships a native library (`libandroidx.graphics.path.so`) and the bundled SQLite driver ships another (`libsqliteJni.so`). Both were checked on 2026-10-07 in the release APK with `zipalign -c -P 16` and by reading their ELF load segments. Check again whenever a dependency with native libraries is added or upgraded, and on the bundle before the first upload. |
 | Edge-to-edge and predictive back | not applicable yet | The placeholder enables edge-to-edge. Real screens and navigation come with the architecture and design sessions. |
 | Permissions kept to the minimum | done | The app requests none, and `RequestedPermissionsTest` fails if a dependency adds `INTERNET` ([decision 0023](decisions/0023-no-network-and-no-crash-sdk.md)). Every permission added later needs a justification here and in the store listing. |
-| Baseline profile for startup and animation performance | not applicable yet | Added with the first real screen; see [ARCHITECTURE.md](ARCHITECTURE.md#performance). |
+| Baseline profile for startup and animation performance | not started | Has a session of its own; see [decision 0032](decisions/0032-baseline-profile-in-its-own-session.md). |
 
 ## Privacy and policy
 
@@ -56,7 +56,7 @@ hosted on GitHub. See [decision 0006](decisions/0006-no-secrets-in-git.md).
 | Privacy policy | not started | Required by Play, and must be hosted at a public URL and linked in the listing and the app. Needed even though the app collects nothing, and especially because it handles financial information. |
 | Data safety form | not applicable yet | Filled in the Play Console. The facts to answer from: everything is stored on the device, the app has no network access, no analytics and no crash SDK, and the database may be included in Android's own backup as described in the next row. Every SDK added later changes the answers. |
 | Backup behaviour decided | done | Device-to-device transfer always; cloud backup only when end-to-end encrypted. [Decision 0020](decisions/0020-android-backup.md). The privacy policy must say this. |
-| Backup and restore verified on a phone | not started | Partly done on 2026-10-07: an encrypted cloud backup and a restore on reinstall worked on the owner's phone with the debug build and an empty database. Still to do before release: the same with real rows on a release build, and a device-to-device transfer. |
+| Backup and restore verified on a phone | not started | Partly done on 2026-10-07: an encrypted cloud backup and a restore on reinstall worked on the owner's phone with the debug build and eight real records, which came back identical. Still to do before release: the same on a release build, and a device-to-device transfer. |
 | Financial features declaration | not applicable yet | Play asks apps to declare financial features. A personal tracker that moves no money and offers no financial services should fall outside the regulated categories; confirm when filling the form. |
 | Content rating questionnaire | not applicable yet | Play Console. |
 | Target audience and content declaration | not applicable yet | Play Console. |

@@ -24,7 +24,7 @@ covers how tests are written and run in this project.
   below API 30 and the minimum SDK is 26.
 - Arrange, act, assert, with a blank line between the three. One behaviour per test.
 - Never assert against a hardcoded user-facing string. Read it from resources, as
-  `PlaceholderScreenTest` does, so the test passes whatever language the device is set to. The
+  `AppLaunchTest` does, so the test passes whatever language the device is set to. The
   owner's phone is set to Croatian.
 - For Compose, use the `v2` test rules (`androidx.compose.ui.test.junit4.v2`). The older ones
   are deprecated, and deprecation warnings fail the build.
@@ -50,5 +50,11 @@ covers how tests are written and run in this project.
 - Database tests live in `core/data/src/androidTest` and open an in-memory database with the
   bundled SQLite driver, as `TroskoDatabaseTest` does. They cannot run on the JVM.
 - A view model test replaces the main dispatcher and collects the state in `backgroundScope`,
-  as `PlaceholderViewModelTest` does; without a collector `stateIn` never starts.
+  as `ExpenseEntryViewModelTest` does; without a collector `stateIn` never starts.
+- Fakes of the repository interfaces, and a clock a test can set, are in
+  `app/src/sharedTest/kotlin`. That folder is compiled into both the JVM tests and the
+  instrumented tests of `:app`, so there is one copy of each fake.
+- `connectedDebugAndroidTest` uninstalls the app when it finishes, and its data with it. On a
+  phone with cloud backup, the next install then restores the last backup; see the notes in
+  [docs/STATUS.md](../../docs/STATUS.md).
 - Say in your report whether you ran the instrumented tests, and on what.

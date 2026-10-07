@@ -52,3 +52,6 @@ index below.
 | [0027](0027-no-material-library.md) | No Material library; components are our own | accepted |
 | [0028](0028-bundled-fonts.md) | Shantell Sans and Nunito, bundled | accepted |
 | [0029](0029-no-haptics-no-sound.md) | No haptics and no sound | accepted |
+| [0030](0030-home-page-and-own-keypad.md) | A home page first; entry is its own screen with the app's own keypad | accepted |
+| [0031](0031-built-in-categories.md) | Nine built-in expense categories with fixed ids | accepted |
+| [0032](0032-baseline-profile-in-its-own-session.md) | The baseline profile gets a session of its own | accepted |
