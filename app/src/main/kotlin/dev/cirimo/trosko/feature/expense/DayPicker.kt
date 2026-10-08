@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
@@ -105,7 +106,7 @@ internal fun DayPicker(
             }
             Column(
                 modifier = Modifier.selectableGroup(),
-                verticalArrangement = Arrangement.spacedBy(TroskoDimens.SpaceXs),
+                verticalArrangement = Arrangement.spacedBy(TroskoDimens.SpaceS),
             ) {
                 page.weeks.forEach { week ->
                     Row {
@@ -118,7 +119,9 @@ internal fun DayPicker(
                                     contentDescription = fullDate.format(day),
                                     selected = day == days.selected,
                                     onClick = { onDayPick(day) },
-                                    modifier = Modifier.weight(1f),
+                                    // Room on the side the shadow is not, so the second outline
+                                    // of the chosen day clears its neighbour.
+                                    modifier = Modifier.weight(1f).padding(start = TroskoDimens.SpaceS),
                                     enabled = day <= days.latest,
                                     underlined = day == days.today,
                                 )
