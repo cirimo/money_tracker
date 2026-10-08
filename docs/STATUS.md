@@ -3,7 +3,7 @@
 The handoff between sessions. Read this first; rewrite it last. It describes the present, so
 replace what is stale instead of appending. History lives in git.
 
-Last updated: 2026-10-07, after session 5 (correcting and deleting a record).
+Last updated: 2026-10-08, after session 5 (correcting and deleting a record).
 
 ## Current state
 
@@ -70,49 +70,57 @@ from drawn variants (published as a private page, not stored in the repository) 
 every recommendation; the choices are in
 [decisions/0033](decisions/0033-correcting-and-deleting-a-record.md).
 
-What was verified by actually running it, on 2026-10-07, on the owner's phone (Samsung SM-G998B,
-Android 15, Croatian, dark theme, text at 100 percent):
+What was verified by actually running it, on 2026-10-07 and 2026-10-08, on the owner's phone
+(Samsung SM-G998B, Android 15, Croatian, 360 by 800 dp):
 
 - `check`, `assembleDebug` and `assembleRelease` (unsigned, with R8) pass on the final tree. The
   release APK is 6.98 MB.
 - `connectedDebugAndroidTest` on the final tree: `:app` 28 tests, `:core:data` 19,
   `:core:designsystem` 4, no failures.
-- Before the calendar was added, the debug build was installed and used through adb. A record
-  was opened from the home page, its amount corrected twice (12,50 to 115,20 by a slip of the
-  script, then to 15,20), and saved. The page turned back, the heading said "Ispravljeno." and
-  the record sat tilted in its old place. After a force-stop and relaunch the home page showed
-  15,20.
+- The debug build was installed and used through adb. A record was opened from the home page,
+  its amount corrected (12,50 to 15,20) and saved. The page turned back, the heading said
+  "Ispravljeno." and the record sat tilted in its old place. After a force-stop and relaunch the
+  home page showed 15,20.
 - Another record was opened, "Obriši" pressed, the question shown in place of the heading, and
   the delete confirmed. The home page said "Obrisano." and listed seven records; the same seven
   were read from the accessibility tree after a force-stop and relaunch.
-- Looking at it found one fault the tests had not: the correction screen reserved the entry
-  screen's tall page above the pad and so had to be scrolled to reach the bottom keys. The page
-  now takes only the height it needs, and the whole screen fits on this phone (360 by 800 dp).
-- After the tests uninstalled the app, a reinstall brought the earlier records back from
+- The calendar: opened from the date, it showed October with the record's day flat and outlined,
+  today underlined and later days in soft ink with the forward arrow disabled. Pressing the 2nd
+  closed it, and the date and the record on the page said "pet 2. 10.".
+- A record opened from the entry screen's list, its date stepped back and saved: the entry
+  screen said "Ispravljeno." and showed the new date. Leaving a changed record with the system's
+  back, earlier, had discarded the change.
+- The light theme, by switching the phone to it and back: the correction screen and the
+  calendar are right. The chosen date and the open calendar survived the switch, which recreates
+  the activity.
+- Text at 200 percent, by setting the font scale to 2.0 and back: nothing is cut off or broken
+  mid-word on the correction screen, in the calendar or in the delete question, whose buttons
+  move under it; the screen scrolls to the keypad.
+- Reduced motion, with the three system animation scales at zero and then restored: the record
+  on the page and the amount sit level, and saving still works.
+- Looking at it found two faults the tests had not, both fixed. The correction screen reserved
+  the entry screen's tall page above the pad and had to be scrolled to reach the bottom keys;
+  the page now takes only the height it needs and the screen fits this phone. And the day cells
+  of the calendar touched, the second outline of the chosen day running into its neighbours;
+  they now stand apart.
+- After each test run uninstalled the app, a reinstall brought the earlier records back from
   Android's backup, as noted under known issues.
 
 What was not verified:
 
-- **The calendar on a device, by eye.** The phone dropped off adb just after the final build was
-  installed. The calendar is covered by the screen tests (a day is chosen and written, no day
-  after today is offered, the month does not turn past the current one) and those ran on the
-  phone, but nobody has looked at it: its spacing, the day cells at 360 dp wide, the underline
-  on today, or how it reads with enlarged text.
-- **The light theme, text at 200 percent and reduced motion for everything built this session.**
-  None of the three was switched on.
-- **A record opened from the entry screen's list.** Only the home page's list was pressed on the
-  device. Both lists use the same row and the same navigation call.
 - **The second landing and the rows moving up after a delete, in motion.** Only still frames
-  taken two seconds later were seen.
-- **TalkBack.** Not switched on this session. The screen tests assert that a pressable row is
-  one button, that the chosen day and chip say they are selected, and that days after today are
-  not offered; the spoken order and wording were not heard. The owner's pass from session 4 is
-  still owed too.
+  taken a second or two later were seen; the owner has to watch them.
+- **TalkBack.** Not switched on this session, because its focus cannot be moved through adb.
+  The screen tests assert that a pressable row is one button, that the chosen day and chip say
+  they are selected, and that days after today are not offered; the spoken order and wording
+  were not heard. The owner's pass from session 4 is still owed too.
 - A failed correction or delete on a real database; both messages are tested with a fake that
   refuses the write. A record that vanishes while its correction screen is open is tested the
   same way.
 - Process death on the correction screen on the device. The view model test restores the
   changed form from saved state.
+- A month of six rows in the calendar on the device, and turning it to an earlier month. The
+  layout of months is tested on the JVM.
 - The page turn following a predictive back gesture, landscape, tablets, a physical keyboard
   and its focus outlines, as before.
 - The emulator. Nothing ran on it this session.
@@ -122,10 +130,9 @@ What was not verified:
 ## Next
 
 1. **The owner's look at the result**: from session 4, the motion of the landing and the page
-   turn, a pass with TalkBack, and the names "Vani" and "Stan"; from session 5, the correction
-   screen and its calendar in both themes and at 200 percent, the second landing, and the
-   English words "Correction" and "Keep". Everything listed above as not verified can be checked
-   in the same sitting.
+   turn, a pass with TalkBack, and the names "Vani" and "Stan"; from session 5, the look of the
+   correction screen and its calendar, the second landing in motion, and the English words
+   "Correction" and "Keep".
 2. **The baseline profile and macrobenchmark**, in a short session of their own
    ([decisions/0032](decisions/0032-baseline-profile-in-its-own-session.md)). The module, the
    plugin and three libraries need the owner's approval.
@@ -201,6 +208,8 @@ What was not verified:
 - A pressable record row is announced by TalkBack with the system's default "double tap to
   activate". A custom action word ("ispravi") was left out because its Croatian grammar inside
   TalkBack's sentence could not be checked.
+- Opening the calendar makes the pad shorter than the keypad does, so the amount and the date
+  move down the screen while it is open. Whether that jump bothers is for the owner to say.
 - On a phone 360 dp wide, seven day cells of the minimum touch size need 8 dp more than the
   content width, so the calendar reaches 4 dp into each gutter.
 - detekt allows a class ten functions. Both view models of the expense feature are at the limit;
